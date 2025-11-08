@@ -1,0 +1,23 @@
+﻿# Archivos de configuración local
+*.user
+*.suo
+*.cache
+*.log
+
+# Archivos de Rider / IntelliJ
+.idea/
+*.iml
+
+# Archivos de Visual Studio
+*.vs/
+*.vscode/
+*.csproj.FileListAbsolute.txt
+*.csproj.nuget.g.props
+*.csproj.nuget.g.targets
+
+# Carpetas de compilación
+bin/
+obj/
+
+# Archivos de entorno
+.env

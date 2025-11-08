@@ -13,11 +13,13 @@ namespace StudyMateAI.Infrastructure.Adapters.Services
     public class AuthService : IAuthService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IUnitOfWork _unitOfWork; 
         private readonly IConfiguration _configuration;
 
-        public AuthService(IUserRepository userRepository, IConfiguration configuration)
+        public AuthService(IUserRepository userRepository, IUnitOfWork unitOfWork, IConfiguration configuration)
         {
             _userRepository = userRepository;
+            _unitOfWork = unitOfWork;
             _configuration = configuration;
         }
 
@@ -45,12 +47,15 @@ namespace StudyMateAI.Infrastructure.Adapters.Services
 
                 user = new User(payload.Subject, payload.Email, name, payload.Picture);
                 
-                user = await _userRepository.CreateAsync(user);
+                _userRepository.Create(user); 
             }
             else
             {
                 user.LastLoginAt = DateTime.UtcNow;
-                await _userRepository.UpdateAsync(user);
+                //Preparamos al usuario para ser actualizado
+                _userRepository.Update(user); 
+                //Guardamos los cambios
+                await _unitOfWork.SaveChangesAsync();
             }
 
             var jwtToken = GenerateJwtToken(user);

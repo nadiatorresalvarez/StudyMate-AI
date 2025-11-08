@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "dgSpecHash": "3F7O7zUd4eA=",
-  "success": true,
+  "dgSpecHash": "mN4e/jxuSiI=",
+  "success": false,
   "projectFilePath": "C:\\StudyMate-AI\\StudyMateAI.Infrastructure\\StudyMateAI.Infrastructure.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\wilfr\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
@@ -10,6 +10,8 @@
     "C:\\Users\\wilfr\\.nuget\\packages\\google.apis.auth\\1.68.0\\google.apis.auth.1.68.0.nupkg.sha512",
     "C:\\Users\\wilfr\\.nuget\\packages\\google.apis.core\\1.68.0\\google.apis.core.1.68.0.nupkg.sha512",
     "C:\\Users\\wilfr\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
+    "C:\\Users\\wilfr\\.nuget\\packages\\mediatr\\13.1.0\\mediatr.13.1.0.nupkg.sha512",
+    "C:\\Users\\wilfr\\.nuget\\packages\\mediatr.contracts\\2.0.1\\mediatr.contracts.2.0.1.nupkg.sha512",
     "C:\\Users\\wilfr\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\7.0.0\\microsoft.bcl.asyncinterfaces.7.0.0.nupkg.sha512",
     "C:\\Users\\wilfr\\.nuget\\packages\\microsoft.build.framework\\17.8.3\\microsoft.build.framework.17.8.3.nupkg.sha512",
     "C:\\Users\\wilfr\\.nuget\\packages\\microsoft.build.locator\\1.7.8\\microsoft.build.locator.1.7.8.nupkg.sha512",
@@ -37,7 +39,7 @@
     "C:\\Users\\wilfr\\.nuget\\packages\\microsoft.extensions.options\\9.0.10\\microsoft.extensions.options.9.0.10.nupkg.sha512",
     "C:\\Users\\wilfr\\.nuget\\packages\\microsoft.extensions.primitives\\9.0.10\\microsoft.extensions.primitives.9.0.10.nupkg.sha512",
     "C:\\Users\\wilfr\\.nuget\\packages\\microsoft.identitymodel.abstractions\\7.6.0\\microsoft.identitymodel.abstractions.7.6.0.nupkg.sha512",
-    "C:\\Users\\wilfr\\.nuget\\packages\\microsoft.identitymodel.jsonwebtokens\\7.6.0\\microsoft.identitymodel.jsonwebtokens.7.6.0.nupkg.sha512",
+    "C:\\Users\\wilfr\\.nuget\\packages\\microsoft.identitymodel.jsonwebtokens\\8.14.0\\microsoft.identitymodel.jsonwebtokens.8.14.0.nupkg.sha512",
     "C:\\Users\\wilfr\\.nuget\\packages\\microsoft.identitymodel.logging\\7.6.0\\microsoft.identitymodel.logging.7.6.0.nupkg.sha512",
     "C:\\Users\\wilfr\\.nuget\\packages\\microsoft.identitymodel.tokens\\7.6.0\\microsoft.identitymodel.tokens.7.6.0.nupkg.sha512",
     "C:\\Users\\wilfr\\.nuget\\packages\\mono.texttemplating\\3.0.0\\mono.texttemplating.3.0.0.nupkg.sha512",
@@ -60,5 +62,17 @@
     "C:\\Users\\wilfr\\.nuget\\packages\\system.text.json\\9.0.10\\system.text.json.9.0.10.nupkg.sha512",
     "C:\\Users\\wilfr\\.nuget\\packages\\system.threading.channels\\7.0.0\\system.threading.channels.7.0.0.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1605",
+      "level": "Error",
+      "message": "Warning As Error: Detected package downgrade: Microsoft.IdentityModel.Tokens from 8.14.0 to 7.6.0. Reference the package directly from the project to select a different version. \r\n StudyMateAI.Infrastructure -> System.IdentityModel.Tokens.Jwt 7.6.0 -> Microsoft.IdentityModel.JsonWebTokens 8.14.0 -> Microsoft.IdentityModel.Tokens (>= 8.14.0) \r\n StudyMateAI.Infrastructure -> Microsoft.IdentityModel.Tokens (>= 7.6.0)",
+      "projectPath": "C:\\StudyMate-AI\\StudyMateAI.Infrastructure\\StudyMateAI.Infrastructure.csproj",
+      "filePath": "C:\\StudyMate-AI\\StudyMateAI.Infrastructure\\StudyMateAI.Infrastructure.csproj",
+      "libraryId": "Microsoft.IdentityModel.Tokens",
+      "targetGraphs": [
+        "net9.0"
+      ]
+    }
+  ]
 }

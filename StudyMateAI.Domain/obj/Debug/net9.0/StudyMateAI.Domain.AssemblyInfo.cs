@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("StudyMateAI.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2253eaa3d10ef5d49206d701d3787bdbcc0a6f39")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7451a8046896dbc6b86b7a2334c7ebee88e95824")]
 [assembly: System.Reflection.AssemblyProductAttribute("StudyMateAI.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("StudyMateAI.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
