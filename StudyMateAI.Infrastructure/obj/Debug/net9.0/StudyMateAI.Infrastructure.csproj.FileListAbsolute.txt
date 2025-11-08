@@ -1,0 +1,14 @@
+D:\tecsup\6to\desarrolloAppEmpresariales\PROYECTO\StudyMateAI\StudyMateAI.Infrastructure\bin\Debug\net9.0\StudyMateAI.Infrastructure.deps.json
+D:\tecsup\6to\desarrolloAppEmpresariales\PROYECTO\StudyMateAI\StudyMateAI.Infrastructure\bin\Debug\net9.0\StudyMateAI.Infrastructure.runtimeconfig.json
+D:\tecsup\6to\desarrolloAppEmpresariales\PROYECTO\StudyMateAI\StudyMateAI.Infrastructure\bin\Debug\net9.0\StudyMateAI.Infrastructure.dll
+D:\tecsup\6to\desarrolloAppEmpresariales\PROYECTO\StudyMateAI\StudyMateAI.Infrastructure\bin\Debug\net9.0\StudyMateAI.Infrastructure.pdb
+D:\tecsup\6to\desarrolloAppEmpresariales\PROYECTO\StudyMateAI\StudyMateAI.Infrastructure\obj\Debug\net9.0\StudyMateAI.Infrastructure.csproj.AssemblyReference.cache
+D:\tecsup\6to\desarrolloAppEmpresariales\PROYECTO\StudyMateAI\StudyMateAI.Infrastructure\obj\Debug\net9.0\StudyMateAI.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+D:\tecsup\6to\desarrolloAppEmpresariales\PROYECTO\StudyMateAI\StudyMateAI.Infrastructure\obj\Debug\net9.0\StudyMateAI.Infrastructure.AssemblyInfoInputs.cache
+D:\tecsup\6to\desarrolloAppEmpresariales\PROYECTO\StudyMateAI\StudyMateAI.Infrastructure\obj\Debug\net9.0\StudyMateAI.Infrastructure.AssemblyInfo.cs
+D:\tecsup\6to\desarrolloAppEmpresariales\PROYECTO\StudyMateAI\StudyMateAI.Infrastructure\obj\Debug\net9.0\StudyMateAI.Infrastructure.csproj.CoreCompileInputs.cache
+D:\tecsup\6to\desarrolloAppEmpresariales\PROYECTO\StudyMateAI\StudyMateAI.Infrastructure\obj\Debug\net9.0\StudyMateAI.Infrastructure.dll
+D:\tecsup\6to\desarrolloAppEmpresariales\PROYECTO\StudyMateAI\StudyMateAI.Infrastructure\obj\Debug\net9.0\refint\StudyMateAI.Infrastructure.dll
+D:\tecsup\6to\desarrolloAppEmpresariales\PROYECTO\StudyMateAI\StudyMateAI.Infrastructure\obj\Debug\net9.0\StudyMateAI.Infrastructure.pdb
+D:\tecsup\6to\desarrolloAppEmpresariales\PROYECTO\StudyMateAI\StudyMateAI.Infrastructure\obj\Debug\net9.0\StudyMateAI.Infrastructure.genruntimeconfig.cache
+D:\tecsup\6to\desarrolloAppEmpresariales\PROYECTO\StudyMateAI\StudyMateAI.Infrastructure\obj\Debug\net9.0\ref\StudyMateAI.Infrastructure.dll
