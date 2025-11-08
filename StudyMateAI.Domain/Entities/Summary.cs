@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace StudyMateAI.Infrastructure.Models;
+namespace StudyMateAI.Domain.Entities;
 
 public partial class Summary
 {

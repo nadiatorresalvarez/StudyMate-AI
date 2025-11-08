@@ -8,19 +8,19 @@
     "net9.0": []
   },
   "packageFolders": {
-    "C:\\Users\\celes\\.nuget\\packages\\": {}
+    "/Users/carlosalonsomamaniccollque/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\tecsup\\6to\\desarrolloAppEmpresariales\\PROYECTO\\StudyMateAI\\StudyMateAI.Domain\\StudyMateAI.Domain.csproj",
+      "projectUniqueName": "/Users/carlosalonsomamaniccollque/Desktop/ProyectosRide/StudyMate-AI/StudyMateAI.Domain/StudyMateAI.Domain.csproj",
       "projectName": "StudyMateAI.Domain",
-      "projectPath": "D:\\tecsup\\6to\\desarrolloAppEmpresariales\\PROYECTO\\StudyMateAI\\StudyMateAI.Domain\\StudyMateAI.Domain.csproj",
-      "packagesPath": "C:\\Users\\celes\\.nuget\\packages\\",
-      "outputPath": "D:\\tecsup\\6to\\desarrolloAppEmpresariales\\PROYECTO\\StudyMateAI\\StudyMateAI.Domain\\obj\\",
+      "projectPath": "/Users/carlosalonsomamaniccollque/Desktop/ProyectosRide/StudyMate-AI/StudyMateAI.Domain/StudyMateAI.Domain.csproj",
+      "packagesPath": "/Users/carlosalonsomamaniccollque/.nuget/packages/",
+      "outputPath": "/Users/carlosalonsomamaniccollque/Desktop/ProyectosRide/StudyMate-AI/StudyMateAI.Domain/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\celes\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "/Users/carlosalonsomamaniccollque/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net9.0"
@@ -65,7 +65,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.304/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

@@ -1,12 +1,63 @@
-using StudyMateAI.Configuration;
+using StudyMateAI.Application.Configuration; // <-- AÑADIDO (para Application)
+using StudyMateAI.Infrastructure.Configuration; // <-- AÑADIDO (para Infrastructure)
+using Microsoft.AspNetCore.Authentication.JwtBearer; // <-- AÑADIDO (para JWT)
+using Microsoft.IdentityModel.Tokens; // <-- AÑADIDO (para JWT)
+using Microsoft.OpenApi.Models; // <-- AÑADIDO (para Swagger)
+using System.Text; // <-- AÑADIDO (para JWT)
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
-builder.Services.AddApplicationService(configuration:builder.Configuration);
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer(); // <-- AÑADIDO (reemplaza AddOpenApi)
+builder.Services.AddApplicationServices(); // <-- ARREGLADO (así se llama tu método)
+builder.Services.AddInfrastructureServices(builder.Configuration); // <-- AÑADIDO (para DB y Auth)
+
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]!);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false; // En desarrollo
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidAudience = jwtSettings["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ClockSkew = TimeSpan.Zero // Expiración exacta
+    };
+});
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "StudyMate AI API", Version = "v1" });
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header (Ej: 'Bearer 12345abcdef')",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme { Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }},
+            Array.Empty<string>()
+        }
+    });
+});
+
 
 var app = builder.Build();
 
@@ -14,8 +65,18 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "StudyMate AI v1");
+        // AÑADIDO: Redirigir la raíz a Swagger para probar fácil
+        c.RoutePrefix = string.Empty; 
+    });
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication(); // <-- PRIMERO (¿Quién eres?)
+app.UseAuthorization();  // <-- SEGUNDO (¿Qué puedes hacer?)
+app.MapControllers();
+
 app.Run();

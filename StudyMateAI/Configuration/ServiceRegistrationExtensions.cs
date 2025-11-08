@@ -11,8 +11,6 @@ public static class ServiceRegistrationExtensions
         // Register application services here
         services.AddHttpContextAccessor();
         
-        
-        
         // Pass configuration to AddInfrastructureServices
         services.AddInfrastructureServices(configuration);
         
