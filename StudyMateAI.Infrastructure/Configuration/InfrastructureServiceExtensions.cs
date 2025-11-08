@@ -23,6 +23,9 @@ namespace StudyMateAI.Infrastructure.Configuration
             // Registra el Repositorio
             services.AddScoped<IUserRepository, UserRepository>();
             
+            //Registro del UnitOfWork
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            
             // Registra el Servicio de Autenticación
             services.AddScoped<IAuthService, AuthService>();
             
