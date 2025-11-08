@@ -144,3 +144,5 @@ C:\StudyMate-AI\StudyMateAI\obj\Debug\net9.0\refint\StudyMateAI.dll
 C:\StudyMate-AI\StudyMateAI\obj\Debug\net9.0\StudyMateAI.pdb
 C:\StudyMate-AI\StudyMateAI\obj\Debug\net9.0\StudyMateAI.genruntimeconfig.cache
 C:\StudyMate-AI\StudyMateAI\obj\Debug\net9.0\ref\StudyMateAI.dll
+C:\StudyMate-AI\StudyMateAI\bin\Debug\net9.0\MediatR.dll
+C:\StudyMate-AI\StudyMateAI\bin\Debug\net9.0\MediatR.Contracts.dll
