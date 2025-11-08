@@ -43,19 +43,8 @@ namespace StudyMateAI.Infrastructure.Adapters.Services
                 }
                 // ==========================================================
 
-                user = new User
-                {
-                    GoogleId = payload.Subject,
-                    Email = payload.Email,
-                    Name = name, // <-- Usamos la variable 'name' arreglada
-                    ProfilePicture = payload.Picture,
-                    EducationLevel = "University", // Valor por defecto
-                    Role = "Student",
-                    PlanType = "Free",
-                    CreatedAt = DateTime.UtcNow,
-                    LastLoginAt = DateTime.UtcNow,
-                    IsActive = true
-                };
+                user = new User(payload.Subject, payload.Email, name, payload.Picture);
+                
                 user = await _userRepository.CreateAsync(user);
             }
             else
