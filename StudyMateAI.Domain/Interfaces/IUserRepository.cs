@@ -9,7 +9,7 @@ namespace StudyMateAI.Domain.Interfaces
     {
         Task<User?> GetByGoogleIdAsync(string googleId);
         Task<User?> GetByIdAsync(int id);
-        Task<User> CreateAsync(User user);
-        Task<User> UpdateAsync(User user);
+        void Create(User user);
+        void Update(User user);
     }
 }
