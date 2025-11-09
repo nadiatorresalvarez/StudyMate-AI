@@ -17,6 +17,8 @@ namespace StudyMateAI.Application.Configuration
             // con nuestras clases de lógica (Query/Command Handlers).
             services.AddMediatR(cfg => 
                 cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+            
+            services.AddScoped<GoogleAuthUseCase>();
 
             return services;
         }

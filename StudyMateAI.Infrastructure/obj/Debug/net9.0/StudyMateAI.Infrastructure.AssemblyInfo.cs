@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("StudyMateAI.Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8c64e7e676c5889c514c0213e8e96af3f1e12404")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+73b6b2535f818553e2eef24e7fc0c94c024da9ab")]
 [assembly: System.Reflection.AssemblyProductAttribute("StudyMateAI.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("StudyMateAI.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

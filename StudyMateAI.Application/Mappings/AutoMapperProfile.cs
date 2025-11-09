@@ -1,5 +1,5 @@
 using AutoMapper;
-using StudyMateAI.Application.DTOs.Auth;
+using StudyMateAI.Application.DTOs;
 using StudyMateAI.Domain.Entities; // <-- Referencia a Domain
 
 namespace StudyMateAI.Application.Mappings
