@@ -8,40 +8,182 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bae20306-2250-4105-91a0-45f5b15d7b06" name="Changes" comment="" />
+    <list default="true" id="bae20306-2250-4105-91a0-45f5b15d7b06" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.idea.StudyMateAI/.idea/copilotDiffState.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/StudyMateAI.Application/DTOs/Subject/ArchiveSubjectDto.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/StudyMateAI.Application/DTOs/Subject/CreateSubjectDto.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/StudyMateAI.Application/DTOs/Subject/SubjectResponseDto.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/StudyMateAI.Application/DTOs/Subject/UpdateSubjectDto.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/StudyMateAI.Application/Services/ISubjectService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/StudyMateAI.Application/Services/SubjectService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/StudyMateAI.Domain/Interfaces/IRepository.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/StudyMateAI.Domain/Interfaces/ISubjectRepository.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/Adapters/Repositories/Repository.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/Adapters/Repositories/SubjectRepository.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/StudyMateAI/Controllers/Base/BaseApiController.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/StudyMateAI/Controllers/SubjectsController.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/StudyMateAI/bin/Debug/net9.0/StudyMateAI.exe" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/apphost.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.StudyMateAI/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.StudyMateAI/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Application/ApplicationServiceExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Application/ApplicationServiceExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Application/Mappings/AutoMapperProfile.cs" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Application/Mappings/AutoMapperProfile.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Application/StudyMateAI.Application.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Application/StudyMateAI.Application.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Application/bin/Debug/net9.0/StudyMateAI.Application.dll" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Application/bin/Debug/net9.0/StudyMateAI.Application.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Application/bin/Debug/net9.0/StudyMateAI.Application.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Application/bin/Debug/net9.0/StudyMateAI.Application.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Application/bin/Debug/net9.0/StudyMateAI.Domain.dll" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Application/bin/Debug/net9.0/StudyMateAI.Domain.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Application/bin/Debug/net9.0/StudyMateAI.Domain.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Application/bin/Debug/net9.0/StudyMateAI.Domain.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Application/obj/Debug/net9.0/StudyMateAI.Application.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Application/obj/Debug/net9.0/StudyMateAI.Application.AssemblyInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Application/obj/Debug/net9.0/StudyMateAI.Application.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Application/obj/Debug/net9.0/StudyMateAI.Application.AssemblyInfoInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Application/obj/Debug/net9.0/StudyMateAI.Application.GeneratedMSBuildEditorConfig.editorconfig" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Application/obj/Debug/net9.0/StudyMateAI.Application.GeneratedMSBuildEditorConfig.editorconfig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Application/obj/Debug/net9.0/StudyMateAI.Application.assets.cache" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Application/obj/Debug/net9.0/StudyMateAI.Application.assets.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Application/obj/Debug/net9.0/StudyMateAI.Application.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Application/obj/Debug/net9.0/StudyMateAI.Application.csproj.AssemblyReference.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Application/obj/Debug/net9.0/StudyMateAI.Application.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Application/obj/Debug/net9.0/StudyMateAI.Application.csproj.CoreCompileInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Application/obj/Debug/net9.0/StudyMateAI.Application.csproj.FileListAbsolute.txt" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Application/obj/Debug/net9.0/StudyMateAI.Application.csproj.FileListAbsolute.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Application/obj/Debug/net9.0/StudyMateAI.Application.dll" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Application/obj/Debug/net9.0/StudyMateAI.Application.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Application/obj/Debug/net9.0/StudyMateAI.Application.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Application/obj/Debug/net9.0/StudyMateAI.Application.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Application/obj/Debug/net9.0/StudyMateAI.Application.sourcelink.json" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Application/obj/Debug/net9.0/StudyMateAI.Application.sourcelink.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Application/obj/Debug/net9.0/ref/StudyMateAI.Application.dll" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Application/obj/Debug/net9.0/ref/StudyMateAI.Application.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Application/obj/Debug/net9.0/refint/StudyMateAI.Application.dll" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Application/obj/Debug/net9.0/refint/StudyMateAI.Application.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Application/obj/StudyMateAI.Application.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Application/obj/StudyMateAI.Application.csproj.nuget.dgspec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Application/obj/StudyMateAI.Application.csproj.nuget.g.props" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Application/obj/StudyMateAI.Application.csproj.nuget.g.props" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Application/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Application/obj/project.assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Application/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Application/obj/project.nuget.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Application/obj/project.packagespec.json" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Application/obj/project.packagespec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Application/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Application/obj/rider.project.model.nuget.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Application/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Application/obj/rider.project.restore.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Domain/bin/Debug/net9.0/StudyMateAI.Domain.dll" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Domain/bin/Debug/net9.0/StudyMateAI.Domain.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Domain/bin/Debug/net9.0/StudyMateAI.Domain.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Domain/bin/Debug/net9.0/StudyMateAI.Domain.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Domain/obj/Debug/net9.0/StudyMateAI.Domain.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Domain/obj/Debug/net9.0/StudyMateAI.Domain.AssemblyInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Domain/obj/Debug/net9.0/StudyMateAI.Domain.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Domain/obj/Debug/net9.0/StudyMateAI.Domain.AssemblyInfoInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Domain/obj/Debug/net9.0/StudyMateAI.Domain.GeneratedMSBuildEditorConfig.editorconfig" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Domain/obj/Debug/net9.0/StudyMateAI.Domain.GeneratedMSBuildEditorConfig.editorconfig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Domain/obj/Debug/net9.0/StudyMateAI.Domain.assets.cache" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Domain/obj/Debug/net9.0/StudyMateAI.Domain.assets.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Domain/obj/Debug/net9.0/StudyMateAI.Domain.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Domain/obj/Debug/net9.0/StudyMateAI.Domain.csproj.CoreCompileInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Domain/obj/Debug/net9.0/StudyMateAI.Domain.csproj.FileListAbsolute.txt" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Domain/obj/Debug/net9.0/StudyMateAI.Domain.csproj.FileListAbsolute.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Domain/obj/Debug/net9.0/StudyMateAI.Domain.dll" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Domain/obj/Debug/net9.0/StudyMateAI.Domain.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Domain/obj/Debug/net9.0/StudyMateAI.Domain.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Domain/obj/Debug/net9.0/StudyMateAI.Domain.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Domain/obj/Debug/net9.0/StudyMateAI.Domain.sourcelink.json" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Domain/obj/Debug/net9.0/StudyMateAI.Domain.sourcelink.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Domain/obj/Debug/net9.0/ref/StudyMateAI.Domain.dll" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Domain/obj/Debug/net9.0/ref/StudyMateAI.Domain.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Domain/obj/Debug/net9.0/refint/StudyMateAI.Domain.dll" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Domain/obj/Debug/net9.0/refint/StudyMateAI.Domain.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Domain/obj/StudyMateAI.Domain.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Domain/obj/StudyMateAI.Domain.csproj.nuget.dgspec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Domain/obj/StudyMateAI.Domain.csproj.nuget.g.props" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Domain/obj/StudyMateAI.Domain.csproj.nuget.g.props" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Domain/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Domain/obj/project.assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Domain/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Domain/obj/project.nuget.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Domain/obj/project.packagespec.json" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Domain/obj/project.packagespec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Domain/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Domain/obj/rider.project.model.nuget.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Domain/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Domain/obj/rider.project.restore.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Infrastructure/Configuration/InfrastructureServiceExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/Configuration/InfrastructureServiceExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Infrastructure/bin/Debug/net9.0/StudyMateAI.Application.dll" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/bin/Debug/net9.0/StudyMateAI.Application.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Infrastructure/bin/Debug/net9.0/StudyMateAI.Application.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/bin/Debug/net9.0/StudyMateAI.Application.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Infrastructure/bin/Debug/net9.0/StudyMateAI.Domain.dll" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/bin/Debug/net9.0/StudyMateAI.Domain.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Infrastructure/bin/Debug/net9.0/StudyMateAI.Domain.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/bin/Debug/net9.0/StudyMateAI.Domain.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Infrastructure/bin/Debug/net9.0/StudyMateAI.Infrastructure.dll" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/bin/Debug/net9.0/StudyMateAI.Infrastructure.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Infrastructure/bin/Debug/net9.0/StudyMateAI.Infrastructure.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/bin/Debug/net9.0/StudyMateAI.Infrastructure.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/Debug/net9.0/StudyMateAI.Infrastructure.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/Debug/net9.0/StudyMateAI.Infrastructure.AssemblyInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/Debug/net9.0/StudyMateAI.Infrastructure.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/Debug/net9.0/StudyMateAI.Infrastructure.AssemblyInfoInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/Debug/net9.0/StudyMateAI.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/Debug/net9.0/StudyMateAI.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/Debug/net9.0/StudyMateAI.Infrastructure.assets.cache" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/Debug/net9.0/StudyMateAI.Infrastructure.assets.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/Debug/net9.0/StudyMateAI.Infrastructure.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/Debug/net9.0/StudyMateAI.Infrastructure.csproj.AssemblyReference.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/Debug/net9.0/StudyMateAI.Infrastructure.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/Debug/net9.0/StudyMateAI.Infrastructure.csproj.CoreCompileInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/Debug/net9.0/StudyMateAI.Infrastructure.csproj.FileListAbsolute.txt" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/Debug/net9.0/StudyMateAI.Infrastructure.csproj.FileListAbsolute.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/Debug/net9.0/StudyMateAI.Infrastructure.dll" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/Debug/net9.0/StudyMateAI.Infrastructure.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/Debug/net9.0/StudyMateAI.Infrastructure.genruntimeconfig.cache" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/Debug/net9.0/StudyMateAI.Infrastructure.genruntimeconfig.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/Debug/net9.0/StudyMateAI.Infrastructure.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/Debug/net9.0/StudyMateAI.Infrastructure.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/Debug/net9.0/StudyMateAI.Infrastructure.sourcelink.json" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/Debug/net9.0/StudyMateAI.Infrastructure.sourcelink.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/Debug/net9.0/ref/StudyMateAI.Infrastructure.dll" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/Debug/net9.0/ref/StudyMateAI.Infrastructure.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/Debug/net9.0/refint/StudyMateAI.Infrastructure.dll" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/Debug/net9.0/refint/StudyMateAI.Infrastructure.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/StudyMateAI.Infrastructure.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/StudyMateAI.Infrastructure.csproj.nuget.dgspec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/StudyMateAI.Infrastructure.csproj.nuget.g.props" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/StudyMateAI.Infrastructure.csproj.nuget.g.props" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/StudyMateAI.Infrastructure.csproj.nuget.g.targets" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/StudyMateAI.Infrastructure.csproj.nuget.g.targets" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/project.assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/project.nuget.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/project.packagespec.json" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/project.packagespec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/rider.project.model.nuget.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI.Infrastructure/obj/rider.project.restore.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/bin/Debug/net9.0/StudyMateAI.Application.dll" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/bin/Debug/net9.0/StudyMateAI.Application.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/bin/Debug/net9.0/StudyMateAI.Application.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/bin/Debug/net9.0/StudyMateAI.Application.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/bin/Debug/net9.0/StudyMateAI.Domain.dll" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/bin/Debug/net9.0/StudyMateAI.Domain.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/bin/Debug/net9.0/StudyMateAI.Domain.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/bin/Debug/net9.0/StudyMateAI.Domain.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/bin/Debug/net9.0/StudyMateAI.Infrastructure.dll" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/bin/Debug/net9.0/StudyMateAI.Infrastructure.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/bin/Debug/net9.0/StudyMateAI.Infrastructure.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/bin/Debug/net9.0/StudyMateAI.Infrastructure.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/bin/Debug/net9.0/StudyMateAI.dll" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/bin/Debug/net9.0/StudyMateAI.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/bin/Debug/net9.0/StudyMateAI.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/bin/Debug/net9.0/StudyMateAI.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/StudyMateAI.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/StudyMateAI.AssemblyInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/StudyMateAI.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/StudyMateAI.AssemblyInfoInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/StudyMateAI.GeneratedMSBuildEditorConfig.editorconfig" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/StudyMateAI.GeneratedMSBuildEditorConfig.editorconfig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/StudyMateAI.assets.cache" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/StudyMateAI.assets.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/StudyMateAI.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/StudyMateAI.csproj.AssemblyReference.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/StudyMateAI.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/StudyMateAI.csproj.CoreCompileInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/StudyMateAI.csproj.FileListAbsolute.txt" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/StudyMateAI.csproj.FileListAbsolute.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/StudyMateAI.dll" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/StudyMateAI.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/StudyMateAI.genruntimeconfig.cache" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/StudyMateAI.genruntimeconfig.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/StudyMateAI.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/StudyMateAI.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/StudyMateAI.sourcelink.json" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/StudyMateAI.sourcelink.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/ref/StudyMateAI.dll" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/ref/StudyMateAI.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/refint/StudyMateAI.dll" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/refint/StudyMateAI.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/rjsmcshtml.dswa.cache.json" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/rjsmcshtml.dswa.cache.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/rjsmrazor.dswa.cache.json" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/rjsmrazor.dswa.cache.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/rpswa.dswa.cache.json" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/obj/Debug/net9.0/rpswa.dswa.cache.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/obj/StudyMateAI.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/obj/StudyMateAI.csproj.nuget.dgspec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/obj/StudyMateAI.csproj.nuget.g.props" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/obj/StudyMateAI.csproj.nuget.g.props" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/obj/StudyMateAI.csproj.nuget.g.targets" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/obj/StudyMateAI.csproj.nuget.g.targets" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/obj/project.assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/obj/project.nuget.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/obj/project.packagespec.json" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/obj/project.packagespec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/obj/rider.project.model.nuget.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudyMateAI/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/StudyMateAI/obj/rider.project.restore.info" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/StudyMateAI.Application/Class1.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/StudyMateAI.Application/DTOs/Subject/ArchiveSubjectDto.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/StudyMateAI.Application/DTOs/Subject/SubjectResponseDto.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/StudyMateAI.Application/Services/ISubjectService.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/StudyMateAI.Application/Services/SubjectService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/StudyMateAI.Domain/Class1.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/StudyMateAI.Domain/Interfaces/IRepository.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/StudyMateAI.Domain/Interfaces/ISubjectRepository.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/StudyMateAI.Infrastructure/Adapters/Repositories/Repository.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/StudyMateAI.Infrastructure/Adapters/Repositories/SubjectRepository.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/StudyMateAI.Infrastructure/Class1.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/StudyMateAI.Infrastructure/Configuration/InfrastructureServiceExtensions.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/StudyMateAI/Configuration/ServiceRegistrationExtensions.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/StudyMateAI/Controllers/Base/BaseApiController.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/StudyMateAI/Controllers/SubjectsController.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2
 }</component>
   <component name="ProjectId" id="35BLJu4F9b05ofztfyrfGnsI6qu" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "Cesar",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected=".NET Launch Settings Profile.StudyMateAI: http">
     <configuration name="StudyMateAI: http" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/StudyMateAI/StudyMateAI.csproj" />
@@ -84,6 +226,7 @@
       <option name="presentableId" value="Default" />
       <updated>1762578452029</updated>
       <workItem from="1762578453761" duration="766000" />
+      <workItem from="1762640846473" duration="4682000" />
     </task>
     <servers />
   </component>

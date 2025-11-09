@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using StudyMateAI.Application.Mappings;      // <-- Ahora sí existe
 using StudyMateAI.Application.UseCases.Auth; // <-- Ahora sí existe
+using StudyMateAI.Application.Services;
 
-// 1. Namespace correcto
 namespace StudyMateAI.Application.Configuration
 {
     public static class ApplicationServiceExtensions
@@ -14,6 +14,9 @@ namespace StudyMateAI.Application.Configuration
             
             // 3. Registra tu UseCase
             services.AddScoped<GoogleAuthUseCase>();
+
+            // Registra los Servicios de Aplicación
+            services.AddScoped<ISubjectService, SubjectService>();
 
             return services;
         }

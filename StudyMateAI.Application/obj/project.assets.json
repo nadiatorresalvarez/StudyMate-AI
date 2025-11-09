@@ -328,19 +328,19 @@
     ]
   },
   "packageFolders": {
-    "/Users/carlosalonsomamaniccollque/.nuget/packages/": {}
+    "C:\\Users\\Usuario\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/carlosalonsomamaniccollque/Desktop/ProyectosRide/StudyMate-AI/StudyMateAI.Application/StudyMateAI.Application.csproj",
+      "projectUniqueName": "C:\\StudyMate-AI\\StudyMateAI.Application\\StudyMateAI.Application.csproj",
       "projectName": "StudyMateAI.Application",
-      "projectPath": "/Users/carlosalonsomamaniccollque/Desktop/ProyectosRide/StudyMate-AI/StudyMateAI.Application/StudyMateAI.Application.csproj",
-      "packagesPath": "/Users/carlosalonsomamaniccollque/.nuget/packages/",
-      "outputPath": "/Users/carlosalonsomamaniccollque/Desktop/ProyectosRide/StudyMate-AI/StudyMateAI.Application/obj/",
+      "projectPath": "C:\\StudyMate-AI\\StudyMateAI.Application\\StudyMateAI.Application.csproj",
+      "packagesPath": "C:\\Users\\Usuario\\.nuget\\packages\\",
+      "outputPath": "C:\\StudyMate-AI\\StudyMateAI.Application\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/Users/carlosalonsomamaniccollque/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\Usuario\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net9.0"
@@ -352,8 +352,8 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "/Users/carlosalonsomamaniccollque/Desktop/ProyectosRide/StudyMate-AI/StudyMateAI.Domain/StudyMateAI.Domain.csproj": {
-              "projectPath": "/Users/carlosalonsomamaniccollque/Desktop/ProyectosRide/StudyMate-AI/StudyMateAI.Domain/StudyMateAI.Domain.csproj"
+            "C:\\StudyMate-AI\\StudyMateAI.Domain\\StudyMateAI.Domain.csproj": {
+              "projectPath": "C:\\StudyMate-AI\\StudyMateAI.Domain\\StudyMateAI.Domain.csproj"
             }
           }
         }
@@ -395,7 +395,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.304/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
