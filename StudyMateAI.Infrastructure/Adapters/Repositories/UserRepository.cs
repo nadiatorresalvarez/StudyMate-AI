@@ -25,18 +25,14 @@ namespace StudyMateAI.Infrastructure.Adapters.Repositories
             return await _context.Users.FindAsync(id);
         }
 
-        public async Task<User> CreateAsync(User user)
+        public void Create(User user)
         {
             _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-            return user;
         }
 
-        public async Task<User> UpdateAsync(User user)
+        public void Update(User user)
         {
             _context.Users.Update(user);
-            await _context.SaveChangesAsync();
-            return user;
         }
     }
 }
