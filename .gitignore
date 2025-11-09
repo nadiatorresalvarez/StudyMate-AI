@@ -1,0 +1,11 @@
+# Dependencias de .NET y Visual Studio/Rider
+[Oo]bj/
+[Bb]in/
+.idea/
+*.suo
+*.user
+*.sln.docstates
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
