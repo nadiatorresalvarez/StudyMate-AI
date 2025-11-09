@@ -2,6 +2,7 @@ using AutoMapper;
 using StudyMateAI.Application.DTOs.Auth;
 using StudyMateAI.Domain.Interfaces; // <-- Referencia a Domain
 using System.Threading.Tasks;
+using StudyMateAI.Application.DTOs;
 
 namespace StudyMateAI.Application.UseCases.Auth
 {
