@@ -1,6 +1,7 @@
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using StudyMateAI.Application.UseCases.Auth; // <-- Ahora sí existe
+using StudyMateAI.Application.Services;
 
 namespace StudyMateAI.Application.Configuration
 {
@@ -17,6 +18,9 @@ namespace StudyMateAI.Application.Configuration
             // con nuestras clases de lógica (Query/Command Handlers).
             services.AddMediatR(cfg => 
                 cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+
+            // Registra los Servicios de Aplicación
+            services.AddScoped<ISubjectService, SubjectService>();
 
             return services;
         }

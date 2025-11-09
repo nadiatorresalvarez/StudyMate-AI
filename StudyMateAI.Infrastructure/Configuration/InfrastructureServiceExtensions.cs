@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using StudyMateAI.Infrastructure.Data; // <-- ARREGLADO (usando .Data)
-using StudyMateAI.Domain.Interfaces; // <-- AÑADIDO (para las interfaces)
-using StudyMateAI.Infrastructure.Adapters.Repositories; // <-- AÑADIDO (para las clases)
-using StudyMateAI.Infrastructure.Adapters.Services; // <-- AÑADIDO (para las clases)
+using StudyMateAI.Infrastructure.Data;
+using StudyMateAI.Domain.Interfaces;
+using StudyMateAI.Infrastructure.Adapters.Repositories;
+using StudyMateAI.Infrastructure.Adapters.Services;
 
 namespace StudyMateAI.Infrastructure.Configuration
 {
@@ -20,16 +20,18 @@ namespace StudyMateAI.Infrastructure.Configuration
                 options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
             });
             
-            // Registra el Repositorio
+            // Registra el Repositorio Genérico
+            services.AddScoped(typeof(Domain.Interfaces.IRepository<>), typeof(Repository<>));
+            
+            // Registra los Repositorios específicos
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ISubjectRepository, SubjectRepository>();
             
             //Registro del UnitOfWork
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             
             // Registra el Servicio de Autenticación
             services.AddScoped<IAuthService, AuthService>();
-            
-            // ==========================================================
             
             return services;
         }

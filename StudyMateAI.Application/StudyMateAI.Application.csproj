@@ -7,10 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="DTOs\UseCases\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\StudyMateAI.Domain\StudyMateAI.Domain.csproj" />
     </ItemGroup>
 
