@@ -211,3 +211,17 @@ PublishScripts/
 
 # Docker
 docker-compose.override.yml
+
+# JetBrains Rider
+.idea/
+
+# Archivos de compilación de .NET
+**/bin/
+**/obj/
+
+# Archivos temporales
+*.nuget.info
+*.cache
+*.pdb
+*.dll
+*.exe
