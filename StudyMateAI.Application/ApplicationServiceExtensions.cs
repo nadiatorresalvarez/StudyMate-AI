@@ -1,7 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
-using StudyMateAI.Application.Mappings;      // <-- Ahora sí existe
-using StudyMateAI.Application.UseCases.Auth; // <-- Ahora sí existe
+using StudyMateAI.Application.Mappings;
+using StudyMateAI.Application.UseCases.Auth;
 using StudyMateAI.Application.Services;
+using System.Reflection;
 
 namespace StudyMateAI.Application.Configuration
 {
@@ -9,13 +10,16 @@ namespace StudyMateAI.Application.Configuration
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
+            // 1. Registra MediatR para CQRS
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+            
             // 2. Registra AutoMapper
             services.AddAutoMapper(typeof(AutoMapperProfile));
             
             // 3. Registra tu UseCase
             services.AddScoped<GoogleAuthUseCase>();
 
-            // Registra los Servicios de Aplicación
+            // Registra los Servicios de Aplicación (legacy, se puede mantener o migrar a CQRS)
             services.AddScoped<ISubjectService, SubjectService>();
             services.AddScoped<IDocumentService, DocumentService>();
 
