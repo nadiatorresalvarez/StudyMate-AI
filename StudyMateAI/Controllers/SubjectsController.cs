@@ -2,16 +2,14 @@
 using Microsoft.AspNetCore.Mvc;
 using StudyMateAI.Application.DTOs.Subject;
 using StudyMateAI.Application.Services;
-using StudyMateAI.Controllers.Base;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace StudyMateAI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class SubjectsController : BaseApiController<CreateSubjectDto, UpdateSubjectDto, SubjectResponseDto>
+    public class SubjectsController : ControllerBase
     {
         private readonly ISubjectService _subjectService;
 
@@ -20,31 +18,19 @@ namespace StudyMateAI.Controllers
             _subjectService = subjectService;
         }
 
-        #region Implementación de métodos abstractos del BaseApiController
+        #region Helper Methods
 
-        protected override async Task<IEnumerable<SubjectResponseDto>> GetAllItemsAsync(int userId)
+        /// <summary>
+        /// Obtiene el ID del usuario actual desde el token JWT
+        /// </summary>
+        private int GetCurrentUserId()
         {
-            return await _subjectService.GetAllSubjectsAsync(userId);
-        }
-
-        protected override async Task<SubjectResponseDto?> GetItemByIdAsync(int userId, int itemId)
-        {
-            return await _subjectService.GetSubjectByIdAsync(userId, itemId);
-        }
-
-        protected override async Task<SubjectResponseDto> CreateItemAsync(int userId, CreateSubjectDto createDto)
-        {
-            return await _subjectService.CreateSubjectAsync(userId, createDto);
-        }
-
-        protected override async Task<SubjectResponseDto?> UpdateItemAsync(int userId, int itemId, UpdateSubjectDto updateDto)
-        {
-            return await _subjectService.UpdateSubjectAsync(userId, itemId, updateDto);
-        }
-
-        protected override async Task<bool> DeleteItemAsync(int userId, int itemId)
-        {
-            return await _subjectService.DeleteSubjectAsync(userId, itemId);
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                throw new UnauthorizedAccessException("Usuario no autenticado");
+            }
+            return int.Parse(userIdClaim);
         }
 
         #endregion
@@ -56,7 +42,7 @@ namespace StudyMateAI.Controllers
         public async Task<IActionResult> GetAllSubjects()
         {
             var userId = GetCurrentUserId();
-            var subjects = await GetAllItemsAsync(userId);
+            var subjects = await _subjectService.GetAllSubjectsAsync(userId);
             return Ok(subjects);
         }
 
@@ -78,10 +64,10 @@ namespace StudyMateAI.Controllers
         public async Task<IActionResult> GetSubjectById(int id)
         {
             var userId = GetCurrentUserId();
-            var subject = await GetItemByIdAsync(userId, id);
+            var subject = await _subjectService.GetSubjectByIdAsync(userId, id);
 
             if (subject == null)
-                return NotFoundResponse("Materia no encontrada");
+                return NotFound(new { message = "Materia no encontrada" });
 
             return Ok(subject);
         }
@@ -96,7 +82,7 @@ namespace StudyMateAI.Controllers
                 return BadRequest(ModelState);
 
             var userId = GetCurrentUserId();
-            var subject = await CreateItemAsync(userId, createDto);
+            var subject = await _subjectService.CreateSubjectAsync(userId, createDto);
 
             return CreatedAtAction(nameof(GetSubjectById), new { id = subject.Id }, subject);
         }
@@ -111,10 +97,10 @@ namespace StudyMateAI.Controllers
                 return BadRequest(ModelState);
 
             var userId = GetCurrentUserId();
-            var subject = await UpdateItemAsync(userId, id, updateDto);
+            var subject = await _subjectService.UpdateSubjectAsync(userId, id, updateDto);
 
             if (subject == null)
-                return NotFoundResponse("Materia no encontrada");
+                return NotFound(new { message = "Materia no encontrada" });
 
             return Ok(subject);
         }
@@ -128,24 +114,24 @@ namespace StudyMateAI.Controllers
             var userId = GetCurrentUserId();
 
             // Verificar si la materia existe y pertenece al usuario
-            var subject = await GetItemByIdAsync(userId, id);
+            var subject = await _subjectService.GetSubjectByIdAsync(userId, id);
             if (subject == null)
-                return NotFoundResponse("Materia no encontrada");
+                return NotFound(new { message = "Materia no encontrada" });
 
             // Verificar si tiene documentos
             var hasDocuments = await _subjectService.CanDeleteSubjectAsync(id);
             
             if (hasDocuments && !force)
             {
-                return BadRequestResponse("La materia contiene documentos. Use force=true para eliminarla de todas formas.");
+                return BadRequest(new { message = "La materia contiene documentos. Use force=true para eliminarla de todas formas." });
             }
 
-            var deleted = await DeleteItemAsync(userId, id);
+            var deleted = await _subjectService.DeleteSubjectAsync(userId, id);
             
             if (!deleted)
-                return BadRequestResponse("No se pudo eliminar la materia");
+                return BadRequest(new { message = "No se pudo eliminar la materia" });
 
-            return SuccessResponse("Materia eliminada exitosamente");
+            return Ok(new { message = "Materia eliminada exitosamente" });
         }
 
         /// <summary>
@@ -156,9 +142,9 @@ namespace StudyMateAI.Controllers
         {
             var userId = GetCurrentUserId();
             
-            var subject = await GetItemByIdAsync(userId, id);
+            var subject = await _subjectService.GetSubjectByIdAsync(userId, id);
             if (subject == null)
-                return NotFoundResponse("Materia no encontrada");
+                return NotFound(new { message = "Materia no encontrada" });
 
             var updateDto = new UpdateSubjectDto
             {
@@ -170,7 +156,7 @@ namespace StudyMateAI.Controllers
                 IsArchived = archiveDto.IsArchived
             };
 
-            var updatedSubject = await UpdateItemAsync(userId, id, updateDto);
+            var updatedSubject = await _subjectService.UpdateSubjectAsync(userId, id, updateDto);
             
             return Ok(updatedSubject);
         }

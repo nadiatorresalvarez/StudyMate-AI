@@ -17,6 +17,7 @@ namespace StudyMateAI.Application.Configuration
 
             // Registra los Servicios de Aplicación
             services.AddScoped<ISubjectService, SubjectService>();
+            services.AddScoped<IDocumentService, DocumentService>();
 
             return services;
         }
