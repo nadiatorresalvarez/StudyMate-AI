@@ -1,7 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MediatR;
 using StudyMateAI.Application.DTOs.Document;
-using StudyMateAI.Application.Services;
+using StudyMateAI.Application.Features.Documents.Commands.CreateDocument;
+using StudyMateAI.Application.Features.Documents.Commands.UpdateDocument;
+using StudyMateAI.Application.Features.Documents.Commands.UpdateProcessingStatus;
+using StudyMateAI.Application.Features.Documents.Commands.DeleteDocument;
+using StudyMateAI.Application.Features.Documents.Queries.GetAllDocuments;
+using StudyMateAI.Application.Features.Documents.Queries.GetDocumentById;
+using StudyMateAI.Application.Features.Documents.Queries.GetDocumentsBySubject;
+using StudyMateAI.Application.Features.Documents.Queries.GetDocumentsByStatus;
 using System.Security.Claims;
 
 namespace StudyMateAI.Controllers
@@ -11,11 +19,11 @@ namespace StudyMateAI.Controllers
     [Authorize]
     public class DocumentsController : ControllerBase
     {
-        private readonly IDocumentService _documentService;
+        private readonly IMediator _mediator;
 
-        public DocumentsController(IDocumentService documentService)
+        public DocumentsController(IMediator mediator)
         {
-            _documentService = documentService;
+            _mediator = mediator;
         }
 
         #region Helper Methods
@@ -42,7 +50,8 @@ namespace StudyMateAI.Controllers
         public async Task<IActionResult> GetAllDocuments()
         {
             var userId = GetCurrentUserId();
-            var documents = await _documentService.GetAllDocumentsAsync(userId);
+            var query = new GetAllDocumentsQuery(userId);
+            var documents = await _mediator.Send(query);
             return Ok(documents);
         }
 
@@ -53,7 +62,8 @@ namespace StudyMateAI.Controllers
         public async Task<IActionResult> GetDocumentById(int id)
         {
             var userId = GetCurrentUserId();
-            var document = await _documentService.GetDocumentByIdAsync(userId, id);
+            var query = new GetDocumentByIdQuery(userId, id);
+            var document = await _mediator.Send(query);
 
             if (document == null)
                 return NotFound(new { message = "Documento no encontrado" });
@@ -68,7 +78,8 @@ namespace StudyMateAI.Controllers
         public async Task<IActionResult> GetDocumentsBySubject(int subjectId)
         {
             var userId = GetCurrentUserId();
-            var documents = await _documentService.GetDocumentsBySubjectAsync(userId, subjectId);
+            var query = new GetDocumentsBySubjectQuery(userId, subjectId);
+            var documents = await _mediator.Send(query);
             return Ok(documents);
         }
 
@@ -79,7 +90,8 @@ namespace StudyMateAI.Controllers
         public async Task<IActionResult> GetDocumentsByStatus(string status)
         {
             var userId = GetCurrentUserId();
-            var documents = await _documentService.GetDocumentsByStatusAsync(userId, status);
+            var query = new GetDocumentsByStatusQuery(userId, status);
+            var documents = await _mediator.Send(query);
             return Ok(documents);
         }
 
@@ -96,7 +108,8 @@ namespace StudyMateAI.Controllers
             
             try
             {
-                var document = await _documentService.CreateDocumentAsync(userId, createDto);
+                var command = new CreateDocumentCommand(userId, createDto);
+                var document = await _mediator.Send(command);
                 return CreatedAtAction(nameof(GetDocumentById), new { id = document.Id }, document);
             }
             catch (UnauthorizedAccessException ex)
@@ -115,7 +128,8 @@ namespace StudyMateAI.Controllers
                 return BadRequest(ModelState);
 
             var userId = GetCurrentUserId();
-            var document = await _documentService.UpdateDocumentAsync(userId, id, updateDto);
+            var command = new UpdateDocumentCommand(userId, id, updateDto);
+            var document = await _mediator.Send(command);
 
             if (document == null)
                 return NotFound(new { message = "Documento no encontrado o no autorizado" });
@@ -133,7 +147,8 @@ namespace StudyMateAI.Controllers
                 return BadRequest(ModelState);
 
             var userId = GetCurrentUserId();
-            var document = await _documentService.UpdateProcessingStatusAsync(userId, id, statusDto);
+            var command = new UpdateProcessingStatusCommand(userId, id, statusDto);
+            var document = await _mediator.Send(command);
 
             if (document == null)
                 return NotFound(new { message = "Documento no encontrado o no autorizado" });
@@ -150,11 +165,14 @@ namespace StudyMateAI.Controllers
             var userId = GetCurrentUserId();
 
             // Verificar si el documento existe y pertenece al usuario
-            var document = await _documentService.GetDocumentByIdAsync(userId, id);
+            var getQuery = new GetDocumentByIdQuery(userId, id);
+            var document = await _mediator.Send(getQuery);
+            
             if (document == null)
                 return NotFound(new { message = "Documento no encontrado o no autorizado" });
 
-            var deleted = await _documentService.DeleteDocumentAsync(userId, id);
+            var command = new DeleteDocumentCommand(userId, id);
+            var deleted = await _mediator.Send(command);
             
             if (!deleted)
                 return BadRequest(new { message = "No se pudo eliminar el documento" });

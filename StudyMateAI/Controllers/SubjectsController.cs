@@ -1,7 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MediatR;
 using StudyMateAI.Application.DTOs.Subject;
-using StudyMateAI.Application.Services;
+using StudyMateAI.Application.Features.Subjects.Commands.CreateSubject;
+using StudyMateAI.Application.Features.Subjects.Commands.UpdateSubject;
+using StudyMateAI.Application.Features.Subjects.Commands.DeleteSubject;
+using StudyMateAI.Application.Features.Subjects.Queries.GetAllSubjects;
+using StudyMateAI.Application.Features.Subjects.Queries.GetActiveSubjects;
+using StudyMateAI.Application.Features.Subjects.Queries.GetSubjectById;
+using StudyMateAI.Application.Features.Subjects.Queries.CanDeleteSubject;
 using System.Security.Claims;
 
 namespace StudyMateAI.Controllers
@@ -11,11 +18,11 @@ namespace StudyMateAI.Controllers
     [Authorize]
     public class SubjectsController : ControllerBase
     {
-        private readonly ISubjectService _subjectService;
+        private readonly IMediator _mediator;
 
-        public SubjectsController(ISubjectService subjectService)
+        public SubjectsController(IMediator mediator)
         {
-            _subjectService = subjectService;
+            _mediator = mediator;
         }
 
         #region Helper Methods
@@ -42,7 +49,8 @@ namespace StudyMateAI.Controllers
         public async Task<IActionResult> GetAllSubjects()
         {
             var userId = GetCurrentUserId();
-            var subjects = await _subjectService.GetAllSubjectsAsync(userId);
+            var query = new GetAllSubjectsQuery(userId);
+            var subjects = await _mediator.Send(query);
             return Ok(subjects);
         }
 
@@ -53,7 +61,8 @@ namespace StudyMateAI.Controllers
         public async Task<IActionResult> GetActiveSubjects()
         {
             var userId = GetCurrentUserId();
-            var subjects = await _subjectService.GetActiveSubjectsAsync(userId);
+            var query = new GetActiveSubjectsQuery(userId);
+            var subjects = await _mediator.Send(query);
             return Ok(subjects);
         }
 
@@ -64,7 +73,8 @@ namespace StudyMateAI.Controllers
         public async Task<IActionResult> GetSubjectById(int id)
         {
             var userId = GetCurrentUserId();
-            var subject = await _subjectService.GetSubjectByIdAsync(userId, id);
+            var query = new GetSubjectByIdQuery(userId, id);
+            var subject = await _mediator.Send(query);
 
             if (subject == null)
                 return NotFound(new { message = "Materia no encontrada" });
@@ -82,7 +92,8 @@ namespace StudyMateAI.Controllers
                 return BadRequest(ModelState);
 
             var userId = GetCurrentUserId();
-            var subject = await _subjectService.CreateSubjectAsync(userId, createDto);
+            var command = new CreateSubjectCommand(userId, createDto);
+            var subject = await _mediator.Send(command);
 
             return CreatedAtAction(nameof(GetSubjectById), new { id = subject.Id }, subject);
         }
@@ -97,7 +108,8 @@ namespace StudyMateAI.Controllers
                 return BadRequest(ModelState);
 
             var userId = GetCurrentUserId();
-            var subject = await _subjectService.UpdateSubjectAsync(userId, id, updateDto);
+            var command = new UpdateSubjectCommand(userId, id, updateDto);
+            var subject = await _mediator.Send(command);
 
             if (subject == null)
                 return NotFound(new { message = "Materia no encontrada" });
@@ -114,19 +126,23 @@ namespace StudyMateAI.Controllers
             var userId = GetCurrentUserId();
 
             // Verificar si la materia existe y pertenece al usuario
-            var subject = await _subjectService.GetSubjectByIdAsync(userId, id);
+            var getQuery = new GetSubjectByIdQuery(userId, id);
+            var subject = await _mediator.Send(getQuery);
+            
             if (subject == null)
                 return NotFound(new { message = "Materia no encontrada" });
 
             // Verificar si tiene documentos
-            var hasDocuments = await _subjectService.CanDeleteSubjectAsync(id);
+            var canDeleteQuery = new CanDeleteSubjectQuery(id);
+            var hasDocuments = await _mediator.Send(canDeleteQuery);
             
             if (hasDocuments && !force)
             {
                 return BadRequest(new { message = "La materia contiene documentos. Use force=true para eliminarla de todas formas." });
             }
 
-            var deleted = await _subjectService.DeleteSubjectAsync(userId, id);
+            var deleteCommand = new DeleteSubjectCommand(userId, id);
+            var deleted = await _mediator.Send(deleteCommand);
             
             if (!deleted)
                 return BadRequest(new { message = "No se pudo eliminar la materia" });
@@ -142,7 +158,9 @@ namespace StudyMateAI.Controllers
         {
             var userId = GetCurrentUserId();
             
-            var subject = await _subjectService.GetSubjectByIdAsync(userId, id);
+            var getQuery = new GetSubjectByIdQuery(userId, id);
+            var subject = await _mediator.Send(getQuery);
+            
             if (subject == null)
                 return NotFound(new { message = "Materia no encontrada" });
 
@@ -156,7 +174,8 @@ namespace StudyMateAI.Controllers
                 IsArchived = archiveDto.IsArchived
             };
 
-            var updatedSubject = await _subjectService.UpdateSubjectAsync(userId, id, updateDto);
+            var updateCommand = new UpdateSubjectCommand(userId, id, updateDto);
+            var updatedSubject = await _mediator.Send(updateCommand);
             
             return Ok(updatedSubject);
         }
