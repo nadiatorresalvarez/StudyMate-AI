@@ -1,5 +1,6 @@
-﻿using MediatR;
+using MediatR;
 using StudyMateAI.Domain.Interfaces;
+using StudyMateAI.Application.Common.Exceptions;
 
 namespace StudyMateAI.Application.UseCases.Users.Commands;
 
@@ -33,8 +34,8 @@ namespace StudyMateAI.Application.UseCases.Users.Commands;
         {
             var user = await _userRepository.GetByIdAsync(request.UserId);
             
-            // TODO: Añadir manejo de excepción si el usuario no se encuentra.
-            // if (user == null) throw new NotFoundException(...);
+            if (user is null)
+                throw new NotFoundException("User profile not found.");
 
             // La capa de aplicación ORQUESTA, la capa de dominio EJECUTA la lógica de negocio.
             user.UpdateProfile(request.Name, request.EducationLevel);

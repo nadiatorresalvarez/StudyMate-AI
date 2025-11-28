@@ -1,6 +1,6 @@
-﻿using AutoMapper;
+using AutoMapper;
 using MediatR;
-using StudyMateAI.Application.DTOs;
+using StudyMateAI.Application.DTOs.Auth;
 using StudyMateAI.Domain.Interfaces;
 
 namespace StudyMateAI.Application.UseCases.Users.Queries;
