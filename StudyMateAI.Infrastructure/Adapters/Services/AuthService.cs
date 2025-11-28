@@ -74,11 +74,18 @@ namespace StudyMateAI.Infrastructure.Adapters.Services
                 new Claim(ClaimTypes.Name, user.Name)
             };
 
+            var expiresInHoursConfig = _configuration["JwtSettings:ExpiresInHours"];
+            int expiresInHours = 24;
+            if (!string.IsNullOrWhiteSpace(expiresInHoursConfig) && int.TryParse(expiresInHoursConfig, out var parsed))
+            {
+                expiresInHours = parsed;
+            }
+
             var token = new JwtSecurityToken(
                 issuer: _configuration["JwtSettings:Issuer"],
                 audience: _configuration["JwtSettings:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(24), // Requisito de 24 horas
+                expires: DateTime.UtcNow.AddHours(expiresInHours),
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
