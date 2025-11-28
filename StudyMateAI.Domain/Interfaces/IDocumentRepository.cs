@@ -16,4 +16,3 @@ namespace StudyMateAI.Domain.Interfaces
         Task<bool> UserOwnsDocumentAsync(int documentId, int userId);
     }
 }
-

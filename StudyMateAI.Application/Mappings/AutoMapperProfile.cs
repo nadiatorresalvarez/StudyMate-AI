@@ -1,4 +1,5 @@
 using AutoMapper;
+using StudyMateAI.Application.DTOs;
 using StudyMateAI.Application.DTOs.Auth;
 using StudyMateAI.Application.DTOs.Subject;
 using StudyMateAI.Application.DTOs.Document;
