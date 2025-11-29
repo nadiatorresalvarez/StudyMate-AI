@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
 using StudyMateAI.Application.DTOs.Document;
@@ -10,6 +10,8 @@ using StudyMateAI.Application.Features.Documents.Queries.GetAllDocuments;
 using StudyMateAI.Application.Features.Documents.Queries.GetDocumentById;
 using StudyMateAI.Application.Features.Documents.Queries.GetDocumentsBySubject;
 using StudyMateAI.Application.Features.Documents.Queries.GetDocumentsByStatus;
+using StudyMateAI.Application.Features.Documents.Commands.UploadDocument;
+using StudyMateAI.DTOs.Request;
 using System.Security.Claims;
 
 namespace StudyMateAI.Controllers
@@ -178,6 +180,34 @@ namespace StudyMateAI.Controllers
                 return BadRequest(new { message = "No se pudo eliminar el documento" });
 
             return Ok(new { message = "Documento eliminado exitosamente" });
+        }
+
+        /// <summary>
+        /// Subir un archivo de documento (multipart/form-data)
+        /// </summary>
+        [HttpPost("upload")]
+        [RequestFormLimits(MultipartBodyLengthLimit = 25_000_000)]
+        [RequestSizeLimit(25_000_000)]
+        public async Task<IActionResult> Upload([FromForm] UploadDocumentRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var userId = GetCurrentUserId();
+
+            await using var stream = request.File.OpenReadStream();
+            var command = new UploadDocumentCommand
+            {
+                UserId = userId,
+                SubjectId = request.SubjectId,
+                Content = stream,
+                OriginalFileName = request.File.FileName,
+                ContentType = request.File.ContentType,
+                Size = request.File.Length
+            };
+
+            var created = await _mediator.Send(command);
+            return CreatedAtAction(nameof(GetDocumentById), new { id = created.Id }, created);
         }
     }
 }
