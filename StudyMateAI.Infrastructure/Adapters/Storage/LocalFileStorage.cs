@@ -4,11 +4,11 @@ using System.IO;
 
 namespace StudyMateAI.Infrastructure.Adapters.Storage;
 
-public class LocalFileStoragex : IFileStoragex
+public class LocalFileStorage : IFileStorage
 {
     private readonly string _rootPath;
 
-    public LocalFileStoragex(IConfiguration configuration)
+    public LocalFileStorage(IConfiguration configuration)
     {
         // Default fallback
         _rootPath = configuration["Storage:RootPath"] ?? "wwwroot/uploads";
