@@ -1,6 +1,8 @@
+using System.IO;
+
 namespace StudyMateAI.Application.Common.Abstractions;
 
-public class IFileStorage
+public interface IFileStorage
 {
-    
+    Task<string> SaveAsync(Stream stream, string fileName, string contentType, string relativePath, CancellationToken ct);
 }

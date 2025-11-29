@@ -9,6 +9,7 @@ namespace StudyMateAI.Application.Configuration
     public static class ApplicationServiceExtensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+        {
             // 1. Registra MediatR para CQRS
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
             
@@ -23,4 +24,4 @@ namespace StudyMateAI.Application.Configuration
             return services;
         }
     }
-
+}

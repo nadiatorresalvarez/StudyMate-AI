@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using StudyMateAI.Domain.Entities;
 using StudyMateAI.Domain.Interfaces;
 using StudyMateAI.Infrastructure.Data;
@@ -60,6 +60,14 @@ namespace StudyMateAI.Infrastructure.Adapters.Repositories
         {
             return await _dbSet
                 .AnyAsync(d => d.Id == documentId && d.Subject.UserId == userId);
+        }
+
+        public async Task<int> CountByUserAsync(int userId, CancellationToken ct = default)
+        {
+            return await _dbSet
+                .Include(d => d.Subject)
+                .Where(d => d.Subject.UserId == userId)
+                .CountAsync(ct);
         }
     }
 }
