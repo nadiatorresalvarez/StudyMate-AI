@@ -1,10 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StudyMateAI.Infrastructure.Data;
 using StudyMateAI.Domain.Interfaces;
 using StudyMateAI.Infrastructure.Adapters.Repositories;
 using StudyMateAI.Infrastructure.Adapters.Services;
+using StudyMateAI.Application.Common.Abstractions;
+using StudyMateAI.Infrastructure.Adapters.Storage;
 
 namespace StudyMateAI.Infrastructure.Configuration
 {
@@ -33,6 +35,9 @@ namespace StudyMateAI.Infrastructure.Configuration
             
             // Registra el Servicio de Autenticación
             services.AddScoped<IAuthService, AuthService>();
+
+            // Almacenamiento de archivos (local por ahora)
+            services.AddScoped<IFileStorage, LocalFileStorage>();
             
             return services;
         }
