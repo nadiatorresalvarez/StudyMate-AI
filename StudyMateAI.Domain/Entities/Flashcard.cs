@@ -20,7 +20,7 @@ public partial class Flashcard
 
     public int? ReviewCount { get; set; }
 
-    public float? EaseFactor { get; set; }
+    public double EaseFactor { get; set; }
 
     public int? IntervalDays { get; set; }
 

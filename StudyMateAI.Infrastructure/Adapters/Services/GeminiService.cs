@@ -33,6 +33,53 @@ public class GeminiService : IGeminiService
             "Identifica las ideas principales y estructura el resumen en Markdown.\n\nTexto:\n" +
             documentText;
 
+        return await CallGeminiAsync(prompt, ct);
+    }
+
+    public async Task<string> GenerateFlashcardsJsonAsync(string conceptsOrText, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(_apiKey))
+            throw new InvalidOperationException("Gemini API key is not configured.");
+
+        var prompt =
+            "A partir de la siguiente lista de conceptos clave o texto académico, genera entre 10 y 20 tarjetas de estudio (flashcards). " +
+            "Devuelve EXCLUSIVAMENTE un JSON válido con una lista de objetos con las propiedades: question, answer y difficulty (Easy|Medium|Hard). " +
+            "No añadas ningún texto antes ni después del JSON.\n\nContenido:\n" +
+            conceptsOrText;
+
+        return await CallGeminiAsync(prompt, ct);
+    }
+
+    public async Task<string> GenerateKeyConceptsAsync(string documentText, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(_apiKey))
+            throw new InvalidOperationException("Gemini API key is not configured.");
+
+        var prompt =
+            "Extrae entre 10 y 15 conceptos clave del siguiente texto académico. " +
+            "Devuelve la respuesta en formato Markdown como una lista, donde cada elemento siga el formato '- Concepto: definición corta'. " +
+            "No añadas explicaciones adicionales fuera de la lista.\n\nTexto:\n" +
+            documentText;
+
+        return await CallGeminiAsync(prompt, ct);
+    }
+
+    public async Task<string> GenerateDetailedSummaryAsync(string documentText, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(_apiKey))
+            throw new InvalidOperationException("Gemini API key is not configured.");
+
+        var prompt =
+            "Crea un resumen detallado de 600-800 palabras del siguiente texto académico. " +
+            "Explica en profundidad los conceptos principales y organiza el contenido en secciones con subtítulos Markdown (##). " +
+            "Usa negritas para resaltar términos clave y listas para enumeraciones importantes.\n\nTexto:\n" +
+            documentText;
+
+        return await CallGeminiAsync(prompt, ct);
+    }
+
+    private async Task<string> CallGeminiAsync(string prompt, CancellationToken ct)
+    {
         var requestBody = new
         {
             contents = new[]
