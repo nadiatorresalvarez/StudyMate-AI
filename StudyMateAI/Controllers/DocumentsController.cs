@@ -11,6 +11,7 @@ using StudyMateAI.Application.Features.Documents.Queries.GetDocumentById;
 using StudyMateAI.Application.Features.Documents.Queries.GetDocumentsBySubject;
 using StudyMateAI.Application.Features.Documents.Queries.GetDocumentsByStatus;
 using StudyMateAI.Application.Features.Documents.Commands.UploadDocument;
+using StudyMateAI.Application.UseCases.Flashcards.Commands;
 using StudyMateAI.DTOs.Request;
 using System.Security.Claims;
 
@@ -71,6 +72,29 @@ namespace StudyMateAI.Controllers
                 return NotFound(new { message = "Documento no encontrado" });
 
             return Ok(document);
+        }
+
+        /// <summary>
+        /// Obtener todas las flashcards de un documento del usuario
+        /// </summary>
+        [HttpGet("{documentId}/flashcards")]
+        public async Task<IActionResult> GetFlashcardsByDocument(int documentId)
+        {
+            var userId = GetCurrentUserId();
+            var command = new GetFlashcardsByDocumentCommand(userId, documentId);
+            try
+            {
+                var flashcards = await _mediator.Send(command);
+                return Ok(flashcards);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Forbid(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
         }
 
         /// <summary>
