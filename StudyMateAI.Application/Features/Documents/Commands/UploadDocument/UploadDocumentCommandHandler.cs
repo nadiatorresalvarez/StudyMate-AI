@@ -5,6 +5,11 @@ using StudyMateAI.Domain.Entities;
 using StudyMateAI.Domain.Interfaces;
 using StudyMateAI.Application.Common.Abstractions;
 using System;
+using System.IO;
+using DocumentFormat.OpenXml.Packaging;
+using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Canvas.Parser;
+using System.Linq;
 
 namespace StudyMateAI.Application.Features.Documents.Commands.UploadDocument;
 
@@ -55,13 +60,25 @@ public class UploadDocumentCommandHandler : IRequestHandler<UploadDocumentComman
         var uniqueName = $"{Guid.NewGuid():N}{ext}";
         var relativePath = $"{request.UserId}/{request.SubjectId}";
 
-        // Guardar archivo
-        var fileUrl = await _fileStorage.SaveAsync(request.Content, uniqueName, request.ContentType, relativePath, cancellationToken);
+        using var buffer = new MemoryStream();
+        await request.Content.CopyToAsync(buffer, cancellationToken);
+        buffer.Position = 0;
+        var fileUrl = await _fileStorage.SaveAsync(buffer, uniqueName, request.ContentType, relativePath, cancellationToken);
+        buffer.Position = 0;
 
         // Mapear FileType desde extensión
         string fileType = ext.Trim('.').ToUpperInvariant();
 
-        // Crear entidad y persistir
+        string extractedText = string.Empty;
+        try
+        {
+            extractedText = ExtractText(buffer, ext);
+        }
+        catch (Exception ex)
+        {
+            extractedText = string.Empty;
+        }
+
         var document = new Document
         {
             FileName = uniqueName,
@@ -70,8 +87,11 @@ public class UploadDocumentCommandHandler : IRequestHandler<UploadDocumentComman
             FileUrl = fileUrl,
             FileSizeKb = (int?)Math.Ceiling(request.Size / 1024.0),
             SubjectId = request.SubjectId,
-            ProcessingStatus = "Pending",
-            UploadedAt = DateTime.UtcNow
+            ProcessingStatus = string.IsNullOrEmpty(extractedText) ? "Failed" : "Completed",
+            ProcessingError = string.IsNullOrEmpty(extractedText) ? "Extraction failed" : null,
+            UploadedAt = DateTime.UtcNow,
+            ExtractedText = extractedText,
+            ProcessedAt = DateTime.UtcNow
         };
 
         var created = await _documentRepository.AddAsync(document);
@@ -84,5 +104,43 @@ public class UploadDocumentCommandHandler : IRequestHandler<UploadDocumentComman
         response.MindmapCount = 0;
         response.ConceptmapCount = 0;
         return response;
+    }
+
+    private static string ExtractText(Stream stream, string ext)
+    {
+        stream.Position = 0;
+        switch (ext)
+        {
+            case ".pdf":
+                using (var reader = new PdfReader(stream))
+                using (var pdf = new PdfDocument(reader))
+                {
+                    var pages = Enumerable.Range(1, pdf.GetNumberOfPages())
+                        .Select(i => PdfTextExtractor.GetTextFromPage(pdf.GetPage(i)));
+                    return string.Join("\n", pages);
+                }
+            case ".docx":
+                using (var word = WordprocessingDocument.Open(stream, false))
+                {
+                    var body = word.MainDocumentPart?.Document?.Body;
+                    return body?.InnerText ?? string.Empty;
+                }
+            case ".pptx":
+                using (var pres = PresentationDocument.Open(stream, false))
+                {
+                    var texts = pres.PresentationPart?
+                        .SlideParts?
+                        .SelectMany(sp => sp.Slide.Descendants<DocumentFormat.OpenXml.Drawing.Text>())
+                        .Select(t => t.Text) ?? Enumerable.Empty<string>();
+                    return string.Join("\n", texts);
+                }
+            case ".txt":
+                using (var reader = new StreamReader(stream))
+                {
+                    return reader.ReadToEnd();
+                }
+            default:
+                return string.Empty;
+        }
     }
 }

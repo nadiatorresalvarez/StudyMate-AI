@@ -186,8 +186,8 @@ namespace StudyMateAI.Controllers
         /// Subir un archivo de documento (multipart/form-data)
         /// </summary>
         [HttpPost("upload")]
-        [RequestFormLimits(MultipartBodyLengthLimit = 25_000_000)]
-        [RequestSizeLimit(25_000_000)]
+        [RequestFormLimits(MultipartBodyLengthLimit = 20_000_000)]
+        [RequestSizeLimit(20_000_000)]
         public async Task<IActionResult> Upload([FromForm] UploadDocumentRequest request)
         {
             if (!ModelState.IsValid)
@@ -206,8 +206,19 @@ namespace StudyMateAI.Controllers
                 Size = request.File.Length
             };
 
-            var created = await _mediator.Send(command);
-            return CreatedAtAction(nameof(GetDocumentById), new { id = created.Id }, created);
+            try
+            {
+                var created = await _mediator.Send(command);
+                return CreatedAtAction(nameof(GetDocumentById), new { id = created.Id }, created);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }

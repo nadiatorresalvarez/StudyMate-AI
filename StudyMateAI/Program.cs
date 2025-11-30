@@ -4,6 +4,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer; // <-- AÑADIDO (para JWT)
 using Microsoft.IdentityModel.Tokens; // <-- AÑADIDO (para JWT)
 using Microsoft.OpenApi.Models; // <-- AÑADIDO (para Swagger)
 using System.Text; // <-- AÑADIDO (para JWT)
+using FluentValidation; // <-- AÑADIDO (FluentValidation)
+using FluentValidation.AspNetCore; // <-- AÑADIDO (FluentValidation MVC)
+using StudyMateAI.Application.Validators; // <-- AÑADIDO (CreateSubjectDtoValidator)
+using StudyMateAI.Validators; // <-- AÑADIDO (UpdateUserProfileRequestValidator)
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +16,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer(); // <-- AÑADIDO (reemplaza AddOpenApi)
 builder.Services.AddApplicationServices(); // <-- ARREGLADO (así se llama tu método)
 builder.Services.AddInfrastructureServices(builder.Configuration); // <-- AÑADIDO (para DB y Auth)
+
+// FluentValidation: registro de validación automática y escaneo de validadores
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateSubjectDtoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdateUserProfileRequestValidator>();
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]!);

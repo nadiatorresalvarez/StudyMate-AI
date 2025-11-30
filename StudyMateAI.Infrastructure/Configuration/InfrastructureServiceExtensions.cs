@@ -1,3 +1,4 @@
+using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,6 +8,7 @@ using StudyMateAI.Infrastructure.Adapters.Repositories;
 using StudyMateAI.Infrastructure.Adapters.Services;
 using StudyMateAI.Application.Common.Abstractions;
 using StudyMateAI.Infrastructure.Adapters.Storage;
+using Pomelo.EntityFrameworkCore.MySql;
 
 namespace StudyMateAI.Infrastructure.Configuration
 {
@@ -19,7 +21,7 @@ namespace StudyMateAI.Infrastructure.Configuration
             services.AddDbContext<dbContextStudyMateAI>((serviceProvider, options) =>
             {
                 var connectionString = configuration.GetConnectionString("DefaultConnection");
-                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+                options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 36)));
             });
             
             // Registra el Repositorio Genérico
