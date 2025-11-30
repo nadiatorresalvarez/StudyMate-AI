@@ -1,2 +1,3 @@
 # Storage local
 wwwroot/
+appsettings.Development.json

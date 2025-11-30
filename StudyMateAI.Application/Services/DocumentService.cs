@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
+using StudyMateAI.Application.Common.Abstractions;
 using StudyMateAI.Application.DTOs.Document;
 using StudyMateAI.Domain.Entities;
 using StudyMateAI.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace StudyMateAI.Application.Services
@@ -13,15 +15,18 @@ namespace StudyMateAI.Application.Services
     {
         private readonly IDocumentRepository _documentRepository;
         private readonly ISubjectRepository _subjectRepository;
+        private readonly IFileStorage _fileStorage;
         private readonly IMapper _mapper;
 
         public DocumentService(
             IDocumentRepository documentRepository,
             ISubjectRepository subjectRepository,
+            IFileStorage fileStorage,
             IMapper mapper)
         {
             _documentRepository = documentRepository;
             _subjectRepository = subjectRepository;
+            _fileStorage = fileStorage;
             _mapper = mapper;
         }
 
@@ -210,11 +215,23 @@ namespace StudyMateAI.Application.Services
 
         public async Task<bool> DeleteDocumentAsync(int userId, int documentId)
         {
+            // Cargar documento
+            var document = await _documentRepository.GetByIdAsync(documentId);
+            if (document == null)
+                return false;
+
             // Verificar que el documento pertenece al usuario
             var userOwns = await _documentRepository.UserOwnsDocumentAsync(documentId, userId);
             if (!userOwns)
                 return false;
 
+            // Borrar archivo físico asociado (si existe)
+            if (!string.IsNullOrWhiteSpace(document.FileUrl))
+            {
+                await _fileStorage.DeleteAsync(document.FileUrl, CancellationToken.None);
+            }
+
+            // Eliminar registro en BD (cascada configurada manejará entidades relacionadas)
             return await _documentRepository.DeleteAsync(documentId);
         }
 

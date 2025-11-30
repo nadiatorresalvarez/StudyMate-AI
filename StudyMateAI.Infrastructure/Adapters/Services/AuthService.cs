@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Google.Apis.Auth;
+using StudyMateAI.Infrastructure.Data;
 
 namespace StudyMateAI.Infrastructure.Adapters.Services
 {
@@ -15,16 +16,21 @@ namespace StudyMateAI.Infrastructure.Adapters.Services
         private readonly IUserRepository _userRepository;
         private readonly IUnitOfWork _unitOfWork; 
         private readonly IConfiguration _configuration;
+        private readonly dbContextStudyMateAI _dbContext; // para logs temporales
 
-        public AuthService(IUserRepository userRepository, IUnitOfWork unitOfWork, IConfiguration configuration)
+        public AuthService(IUserRepository userRepository, IUnitOfWork unitOfWork, IConfiguration configuration, dbContextStudyMateAI dbContext)
         {
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
             _configuration = configuration;
+            _dbContext = dbContext;
         }
 
         public async Task<(User User, string JwtToken)> AuthenticateWithGoogleAsync(string idToken)
         {
+            // LOG TEMPORAL: confirmar cadena de conexión efectiva
+            try { System.Console.WriteLine("DB context type: " + _dbContext.GetType().Name); } catch {}
+
             var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, new GoogleJsonWebSignature.ValidationSettings
             {
                 Audience = new[] { _configuration["GoogleAuth:ClientId"] }
@@ -54,9 +60,10 @@ namespace StudyMateAI.Infrastructure.Adapters.Services
                 user.LastLoginAt = DateTime.UtcNow;
                 //Preparamos al usuario para ser actualizado
                 _userRepository.Update(user); 
-                //Guardamos los cambios
-                await _unitOfWork.SaveChangesAsync();
             }
+
+            // Guardamos cambios en ambos casos (creación o actualización)
+            await _unitOfWork.SaveChangesAsync();
 
             var jwtToken = GenerateJwtToken(user);
             return (user, jwtToken);

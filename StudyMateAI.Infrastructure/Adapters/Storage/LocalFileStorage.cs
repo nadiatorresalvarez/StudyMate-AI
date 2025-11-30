@@ -34,4 +34,34 @@ public class LocalFileStorage : IFileStorage
 
         return url;
     }
+
+    public Task DeleteAsync(string fileUrlOrPath, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(fileUrlOrPath))
+        {
+            return Task.CompletedTask;
+        }
+
+        // Si viene como URL tipo "/uploads/{relative}/{fileName}", la convertimos a ruta física
+        var path = fileUrlOrPath.Trim();
+        if (path.StartsWith("/"))
+        {
+            path = path.TrimStart('/');
+        }
+
+        if (path.StartsWith("uploads/", StringComparison.OrdinalIgnoreCase))
+        {
+            path = path.Substring("uploads/".Length);
+        }
+
+        // Ahora path es relativo a _rootPath (por ejemplo "userId/subjectId/file.ext")
+        var fullPath = Path.Combine(_rootPath, path.Replace('/', Path.DirectorySeparatorChar));
+
+        if (File.Exists(fullPath))
+        {
+            File.Delete(fullPath);
+        }
+
+        return Task.CompletedTask;
+    }
 }
