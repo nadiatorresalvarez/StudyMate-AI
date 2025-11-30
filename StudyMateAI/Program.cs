@@ -1,5 +1,7 @@
 using StudyMateAI.Application.Configuration; // <-- AÑADIDO (para Application)
 using StudyMateAI.Infrastructure.Configuration; // <-- AÑADIDO (para Infrastructure)
+using StudyMateAI.Application.Common.Abstractions;
+using StudyMateAI.Infrastructure.Adapters.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer; // <-- AÑADIDO (para JWT)
 using Microsoft.IdentityModel.Tokens; // <-- AÑADIDO (para JWT)
 using Microsoft.OpenApi.Models; // <-- AÑADIDO (para Swagger)
@@ -16,6 +18,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer(); // <-- AÑADIDO (reemplaza AddOpenApi)
 builder.Services.AddApplicationServices(); // <-- ARREGLADO (así se llama tu método)
 builder.Services.AddInfrastructureServices(builder.Configuration); // <-- AÑADIDO (para DB y Auth)
+builder.Services.AddHttpClient<IGeminiService, GeminiService>();
 
 // FluentValidation: registro de validación automática y escaneo de validadores
 builder.Services.AddFluentValidationAutoValidation();
