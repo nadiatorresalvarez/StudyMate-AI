@@ -36,6 +36,28 @@ public class GeminiService : IGeminiService
         return await CallGeminiAsync(prompt, ct);
     }
 
+    public async Task<string> GenerateQuizJsonAsync(string documentText, int questionCount, string difficulty, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(_apiKey))
+            throw new InvalidOperationException("Gemini API key is not configured.");
+
+        var prompt =
+            "Genera un cuestionario de autoevaluación a partir del siguiente texto académico. " +
+            $"Crea exactamente {questionCount} preguntas de tipo MultipleChoice o TrueFalse, con dificultad {difficulty}. " +
+            "Devuelve EXCLUSIVAMENTE un JSON válido con el siguiente formato: " +
+            "[{" +
+            "\"questionText\": \"texto de la pregunta\", " +
+            "\"questionType\": \"MultipleChoice|TrueFalse\", " +
+            "\"options\": [\"Opción A\", \"Opción B\", ...], " +
+            "\"correctAnswer\": \"texto exacto de la opción correcta\", " +
+            "\"explanation\": \"explicación corta de la respuesta\"" +
+            "}]. " +
+            "No añadas ningún texto antes ni después del JSON.\n\nTexto:\n" +
+            documentText;
+
+        return await CallGeminiAsync(prompt, ct);
+    }
+
     public async Task<string> GenerateFlashcardsJsonAsync(string conceptsOrText, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(_apiKey))
