@@ -31,7 +31,7 @@ builder.Services.AddCors(options =>
             // AQUÍ: Más adelante, cuando creemos el proyecto Blazor,
             // tendremos que venir a verificar que este puerto coincida.
             // Por seguridad, en producción no uses AllowAnyOrigin.
-            policy.AllowAnyOrigin() // Por ahora permitimos todo para facilitar el desarrollo
+            policy.WithOrigins("http://localhost:5041")
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
@@ -103,6 +103,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowBlazorClient"); 
 
 app.UseAuthentication(); // <-- PRIMERO (¿Quién eres?)
 app.UseAuthorization();  // <-- SEGUNDO (¿Qué puedes hacer?)
