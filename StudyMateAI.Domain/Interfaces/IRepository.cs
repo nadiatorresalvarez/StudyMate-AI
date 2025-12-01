@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
@@ -11,6 +12,7 @@ namespace StudyMateAI.Domain.Interfaces
     /// <typeparam name="T">Entidad del dominio</typeparam>
     public interface IRepository<T> where T : class
     {
+        IQueryable<T> Query();
         Task<T?> GetByIdAsync(int id);
         Task<IEnumerable<T>> GetAllAsync();
         Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
