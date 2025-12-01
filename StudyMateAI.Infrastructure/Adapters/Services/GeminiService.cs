@@ -125,4 +125,19 @@ public class GeminiService : IGeminiService
             .GetProperty("text")
             .GetString() ?? "";
     }
+    
+    public async Task<string> GenerateMindMapJsonAsync(string documentText, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(_apiKey))
+            throw new InvalidOperationException("Gemini API key is not configured.");
+
+        var prompt = 
+            "Genera una estructura jerárquica para un Mapa Mental basado en el siguiente texto. " +
+            "Devuelve EXCLUSIVAMENTE un JSON que represente un árbol de nodos. " +
+            "Estructura requerida: { 'label': 'Idea Central', 'children': [ { 'label': 'Idea Secundaria 1', 'children': [...] } ] }.\n" +
+            "Limita la profundidad a 3 niveles y máximo 30 nodos en total.\n\n" +
+            "Texto:\n" + documentText;
+
+        return await CallGeminiAsync(prompt, ct);
+    }
 }
