@@ -57,4 +57,24 @@ public class MapsController : ControllerBase
         var result = await _mediator.Send(query);
         return Ok(result);
     }
+    
+    [HttpDelete("mindmap/{id}")]
+    public async Task<IActionResult> DeleteMindMap(int id)
+    {
+        int userId = 1; // Sacar del Token en producción
+        var command = new DeleteMindMapCommand { MindMapId = id, UserId = userId };
+    
+        await _mediator.Send(command);
+        return NoContent(); // 204 No Content es el estándar para borrados exitosos
+    }
+    
+    [HttpDelete("conceptmap/{id}")]
+    public async Task<IActionResult> DeleteConceptMap(int id)
+    {
+        int userId = 1; // Sacar del token
+        var command = new DeleteConceptMapCommand { ConceptMapId = id, UserId = userId };
+    
+        await _mediator.Send(command);
+        return NoContent();
+    }
 }
