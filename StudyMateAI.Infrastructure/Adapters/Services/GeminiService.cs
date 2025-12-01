@@ -126,32 +126,37 @@ public class GeminiService : IGeminiService
             .GetString() ?? "";
     }
     
-    public async Task<string> GenerateMindMapJsonAsync(string documentText, string mapType, CancellationToken ct)
+    public async Task<string> GenerateMindMapJsonAsync(string documentText, CancellationToken ct)
     {
-        if (string.IsNullOrWhiteSpace(_apiKey))
-            throw new InvalidOperationException("Gemini API key is not configured.");
+        if (string.IsNullOrWhiteSpace(_apiKey)) throw new InvalidOperationException("No API Key.");
 
-        // Adaptamos el Prompt según si es Mapa Mental o Conceptual (Requisito del Módulo 6)
-        string promptInstruction = mapType == "ConceptMap" 
-            ? "Genera un Mapa Conceptual (red de conceptos relacionados). Estructura JSON: { 'nodes': [{id, label}], 'edges': [{source, target, label}] }."
-            : "Genera un Mapa Mental (estructura jerárquica radial). Estructura JSON: { 'label': 'Idea Central', 'children': [...] }.";
-
-        var prompt = 
-            $"{promptInstruction} " +
-            "Devuelve EXCLUSIVAMENTE el JSON crudo. NO uses bloques de código markdown (```json). " +
-            "Limita a máximo 30 nodos para mantener legibilidad.\n\n" +
+        var prompt =
+            "Genera un Mapa Mental (estructura jerárquica radial) del siguiente texto. " +
+            "Devuelve EXCLUSIVAMENTE un JSON válido con esta estructura: { \"label\": \"Idea Central\", \"children\": [ { \"label\": \"Rama 1\", \"children\": [...] } ] }. " +
+            "Reglas: Máximo 30 nodos. NO uses bloques markdown (```json).\n\n" +
             "Texto:\n" + documentText;
 
-        // Llamamos a la IA
         string rawResponse = await CallGeminiAsync(prompt, ct);
+        return CleanJson(rawResponse);
+    }
+    
+    public async Task<string> GenerateConceptMapJsonAsync(string documentText, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(_apiKey)) throw new InvalidOperationException("No API Key.");
 
-        // --- LIMPIEZA DE SEGURIDAD (IMPORTANTE) ---
-        // Esto quita el ```json y ``` que hace que se vea raro
-        string cleanJson = rawResponse
-            .Replace("```json", "")
-            .Replace("```", "")
-            .Trim();
+        var prompt =
+            "Genera un Mapa Conceptual (red de conceptos) del siguiente texto. " +
+            "Devuelve EXCLUSIVAMENTE un JSON válido con esta estructura: " +
+            "{ \"nodes\": [{ \"id\": \"1\", \"label\": \"Concepto\" }], \"edges\": [{ \"source\": \"1\", \"target\": \"2\", \"label\": \"conector\" }] }. " +
+            "Reglas: 15-25 conceptos. NO uses bloques markdown.\n\n" +
+            "Texto:\n" + documentText;
 
-        return cleanJson;
+        string rawResponse = await CallGeminiAsync(prompt, ct);
+        return CleanJson(rawResponse);
+    }
+    
+    private string CleanJson(string raw)
+    {
+        return raw.Replace("```json", "").Replace("```", "").Trim();
     }
 }
