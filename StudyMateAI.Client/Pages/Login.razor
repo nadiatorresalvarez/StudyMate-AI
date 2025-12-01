@@ -1,0 +1,78 @@
+@page "/login"
+@using StudyMateAI.Client.Services
+@inject AuthService AuthService
+@inject NavigationManager NavManager
+@inject ISnackbar Snackbar
+
+<!-- Layout vacío para que no salga el menú lateral en el login -->
+@layout LoginLayout 
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center justify-center mud-width-full" Style="height: 100vh;">
+    <MudPaper Elevation="25" Class="pa-8" Width="100%" MaxWidth="400px">
+        <div class="d-flex flex-column align-center gap-4">
+            <MudIcon Icon="@Icons.Material.Filled.School" Color="Color.Primary" Size="Size.Large" Style="width: 64px; height: 64px;" />
+            <MudText Typo="Typo.h4" Color="Color.Primary" Class="mb-4">StudyMate AI</MudText>
+            
+            <MudText Typo="Typo.body1" Align="Align.Center" Class="mb-4">
+                Ingresa un token de prueba para conectar.
+            </MudText>
+
+            <MudTextField @bind-Value="tokenInput" Label="Pegar Google ID Token" Variant="Variant.Outlined" Class="mb-2" />
+            
+            <MudButton Variant="Variant.Filled" 
+                       Color="Color.Primary" 
+                       Size="Size.Large" 
+                       FullWidth="true" 
+                       OnClick="HandleLogin"
+                       Disabled="@_processing">
+                @if (_processing)
+                {
+                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+                    <MudText Class="ms-2">Validando...</MudText>
+                }
+                else
+                {
+                    <MudText>Iniciar Sesión</MudText>
+                }
+            </MudButton>
+        </div>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private bool _processing = false;
+    private string tokenInput = "";
+
+    private async Task HandleLogin()
+    {
+        if(string.IsNullOrWhiteSpace(tokenInput))
+        {
+             Snackbar.Add("Debes ingresar un token", Severity.Warning);
+             return;
+        }
+
+        _processing = true;
+        try
+        {
+            var success = await AuthService.Login(tokenInput);
+
+            if (success)
+            {
+                Snackbar.Add("¡Login Exitoso!", Severity.Success);
+                NavManager.NavigateTo("/"); // Redirige al Home
+            }
+            else
+            {
+                Snackbar.Add("Token rechazado por el servidor.", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error de conexión: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _processing = false;
+        }
+    }
+}
