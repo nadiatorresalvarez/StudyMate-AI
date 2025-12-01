@@ -9,5 +9,6 @@ public interface IGeminiService
     Task<string> GenerateDetailedSummaryAsync(string documentText, CancellationToken ct);
     Task<string> GenerateKeyConceptsAsync(string documentText, CancellationToken ct);
     Task<string> GenerateFlashcardsJsonAsync(string conceptsOrText, CancellationToken ct);
-    Task<string> GenerateMindMapJsonAsync(string documentText, string mapType, CancellationToken ct);
+    Task<string> GenerateMindMapJsonAsync(string text, CancellationToken ct);
+    Task<string> GenerateConceptMapJsonAsync(string text, CancellationToken ct);
 }
