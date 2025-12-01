@@ -1,7 +1,9 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using StudyMateAI.Application.UseCases.ConceptMaps.Commands;
+using StudyMateAI.Application.UseCases.ConceptMaps.Queries;
 using StudyMateAI.Application.UseCases.Mindmaps.Commands;
+using StudyMateAI.Application.UseCases.Mindmaps.Queries;
 
 namespace StudyMateAI.Controllers;
 
@@ -31,6 +33,28 @@ public class MapsController : ControllerBase
     public async Task<IActionResult> GenerateConceptMap([FromBody] GenerateConceptMapCommand command)
     {
         var result = await _mediator.Send(command);
+        return Ok(result);
+    }
+    
+    // Endpoint para obtener un MindMap por ID
+    [HttpGet("mindmap/{id}")]
+    public async Task<IActionResult> GetMindMap(int id)
+    {
+        // Simulación de UserId (en producción lo sacas del Token)
+        int userId = 1; 
+
+        var query = new GetMindMapByIdQuery { MindMapId = id, UserId = userId };
+        var result = await _mediator.Send(query);
+        return Ok(result);
+    }
+    
+    // Endpoint para obtener un ConceptMap por ID
+    [HttpGet("conceptmap/{id}")]
+    public async Task<IActionResult> GetConceptMap(int id)
+    {
+        int userId = 1; // Sacar del token real
+        var query = new GetConceptMapByIdQuery { ConceptMapId = id, UserId = userId };
+        var result = await _mediator.Send(query);
         return Ok(result);
     }
 }
