@@ -20,6 +20,23 @@ builder.Services.AddApplicationServices(); // <-- ARREGLADO (así se llama tu m�
 builder.Services.AddInfrastructureServices(builder.Configuration); // <-- AÑADIDO (para DB y Auth)
 builder.Services.AddHttpClient<IGeminiService, GeminiService>();
 
+// Esto permite que el Frontend (Blazor) hable con el Backend
+var blazorPolicy = "AllowBlazorClient";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: blazorPolicy,
+        policy =>
+        {
+            // AQUÍ: Más adelante, cuando creemos el proyecto Blazor,
+            // tendremos que venir a verificar que este puerto coincida.
+            // Por seguridad, en producción no uses AllowAnyOrigin.
+            policy.AllowAnyOrigin() // Por ahora permitimos todo para facilitar el desarrollo
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
 // FluentValidation: registro de validación automática y escaneo de validadores
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateSubjectDtoValidator>();
