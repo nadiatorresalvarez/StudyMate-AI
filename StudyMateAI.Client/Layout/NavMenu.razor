@@ -1,40 +1,16 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">StudyMateAI.Client</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
-</div>
-
-<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="nav flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-    </nav>
-</div>
-
-@code {
-    private bool collapseNavMenu = true;
-
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
-
-}
+﻿<MudNavMenu Class="mt-4">
+    <MudText Typo="Typo.subtitle2" Color="Color.Default" Class="ml-4 mb-2 mt-2"><b>GENERAL</b></MudText>
+    
+    <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
+    <MudNavLink Href="materias" Icon="@Icons.Material.Filled.LibraryBooks">Mis Materias</MudNavLink>
+    
+    <MudText Typo="Typo.subtitle2" Color="Color.Default" Class="ml-4 mb-2 mt-4"><b>ESTUDIO</b></MudText>
+    
+    <!-- Estos hrefs los crearemos más adelante -->
+    <MudNavLink Href="documentos" Icon="@Icons.Material.Filled.Description" Disabled="true">Documentos (Pronto)</MudNavLink>
+    <MudNavLink Href="repaso" Icon="@Icons.Material.Filled.School" Disabled="true">Sesión de Repaso (Pronto)</MudNavLink>
+    
+    <MudText Typo="Typo.subtitle2" Color="Color.Default" Class="ml-4 mb-2 mt-4"><b>CONFIGURACIÓN</b></MudText>
+    
+    <MudNavLink Href="perfil" Icon="@Icons.Material.Filled.Settings" Disabled="true">Mi Perfil</MudNavLink>
+</MudNavMenu>

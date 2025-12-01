@@ -1,0 +1,81 @@
+@using MudBlazor.Utilities
+@using StudyMateAI.Client.DTOs.Subject
+
+<!-- Quitamos el ISnackbar si no lo usas dentro del diálogo -->
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <!-- Usamos la variable "Id" local, no Model.Id -->
+            <MudIcon Icon="@(Id == 0 ? Icons.Material.Filled.AddCircle : Icons.Material.Filled.Edit)" 
+                     Class="mr-3 mb-n1"/>
+            @(Id == 0 ? "Nueva Materia" : "Editar Materia")
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudContainer Style="max-height: 400px; overflow-y: scroll">
+            <MudForm @ref="form" @bind-IsValid="@success">
+                
+                <MudTextField T="string" 
+                              Label="Nombre de la Asignatura" 
+                              @bind-Value="Model.Name"
+                              For="@(() => Model.Name)"
+                              Variant="Variant.Outlined" 
+                              Margin="Margin.Dense"
+                              Class="mb-4"
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Title" />
+                
+                <MudTextField T="string" 
+                              Label="Descripción (Opcional)" 
+                              @bind-Value="Model.Description"
+                              Variant="Variant.Outlined"
+                              Lines="3"
+                              Class="mb-4" 
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Description"/>
+
+                <MudText Typo="Typo.subtitle2" Class="mb-2">Color Identificativo</MudText>
+                <MudColorPicker Label="Selecciona un color" 
+                                @bind-Text="Model.Color" 
+                                Style="width: 100%;"
+                                Variant="Variant.Outlined"
+                                ColorPickerView="ColorPickerView.Palette" 
+                                Palette="@_pastelPalette" /> 
+            </MudForm>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Variant="Variant.Text">Cancelar</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit" Class="ml-2">Guardar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!; // Soluciona warning de null
+
+    [Parameter] public CreateSubjectDto Model { get; set; } = new();
+    
+    // --- ESTO ES LO NUEVO: Recibimos el ID aparte ---
+    [Parameter] public int Id { get; set; } = 0; 
+
+    MudForm form = default!; // Soluciona warning de null
+    bool success;
+
+    private IEnumerable<MudColor> _pastelPalette = new List<MudColor>()
+    {
+        "#FFB7B2", "#FFDAC1", "#E2F0CB", "#B5EAD7", "#C7CEEA",
+        "#90A4AE", "#7986CB", "#4DB6AC", "#FF8A65", "#BA68C8"
+    };
+
+    void Submit()
+    {
+        form.Validate();
+        if (success)
+        {
+            MudDialog.Close(DialogResult.Ok(Model));
+        }
+    }
+
+    void Cancel() => MudDialog.Cancel();
+}
