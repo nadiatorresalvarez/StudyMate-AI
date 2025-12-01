@@ -130,11 +130,29 @@ public class GeminiService : IGeminiService
     {
         if (string.IsNullOrWhiteSpace(_apiKey)) throw new InvalidOperationException("No API Key.");
 
-        var prompt =
-            "Genera un Mapa Mental (estructura jerárquica radial) del siguiente texto. " +
-            "Devuelve EXCLUSIVAMENTE un JSON válido con esta estructura: { \"label\": \"Idea Central\", \"children\": [ { \"label\": \"Rama 1\", \"children\": [...] } ] }. " +
-            "Reglas: Máximo 30 nodos. NO uses bloques markdown (```json).\n\n" +
-            "Texto:\n" + documentText;
+        var prompt = $@"
+            Actúa como un experto en educación y visualización de datos.
+            Analiza el siguiente texto y genera un Mapa Mental Jerárquico.
+            
+            REGLAS ESTRICTAS DE SALIDA:
+            1. Devuelve SOLAMENTE un objeto JSON válido.
+            2. NO uses bloques de código markdown (```json). NO escribas nada antes ni después del JSON.
+            3. El idioma debe ser ESPAÑOL.
+            4. Usa textos cortos y concisos para los nodos (máximo 5-7 palabras).
+            
+            ESTRUCTURA JSON REQUERIDA:
+            {{
+              ""label"": ""Idea Central"",
+              ""children"": [
+                {{
+                  ""label"": ""Idea Secundaria"",
+                  ""children"": [ ... ]
+                }}
+              ]
+            }}
+
+            TEXTO A ANALIZAR:
+            {documentText}";
 
         string rawResponse = await CallGeminiAsync(prompt, ct);
         return CleanJson(rawResponse);
@@ -144,12 +162,31 @@ public class GeminiService : IGeminiService
     {
         if (string.IsNullOrWhiteSpace(_apiKey)) throw new InvalidOperationException("No API Key.");
 
-        var prompt =
-            "Genera un Mapa Conceptual (red de conceptos) del siguiente texto. " +
-            "Devuelve EXCLUSIVAMENTE un JSON válido con esta estructura: " +
-            "{ \"nodes\": [{ \"id\": \"1\", \"label\": \"Concepto\" }], \"edges\": [{ \"source\": \"1\", \"target\": \"2\", \"label\": \"conector\" }] }. " +
-            "Reglas: 15-25 conceptos. NO uses bloques markdown.\n\n" +
-            "Texto:\n" + documentText;
+        var prompt = $@"
+            Actúa como un experto en pedagogía.
+            Analiza el siguiente texto y genera un Mapa Conceptual (Red de Conocimiento).
+            
+            REGLAS ESTRICTAS DE SALIDA:
+            1. Devuelve SOLAMENTE un objeto JSON válido.
+            2. NO uses bloques de código markdown (```json).
+            3. Identifica los conceptos clave (Nodos) y cómo se relacionan (Aristas).
+            4. Las etiquetas de las relaciones ('label') deben ser VERBOS o frases conectoras (ej: 'genera', 'es parte de', 'se divide en').
+            5. Limita a un máximo de 20 conceptos clave más importantes.
+            
+            ESTRUCTURA JSON REQUERIDA:
+            {{
+              ""nodes"": [
+                {{ ""id"": ""1"", ""label"": ""Concepto A"" }},
+                {{ ""id"": ""2"", ""label"": ""Concepto B"" }}
+              ],
+              ""edges"": [
+                {{ ""source"": ""1"", ""target"": ""2"", ""label"": ""causa"" }}
+              ]
+            }}
+
+            TEXTO A ANALIZAR:
+            {documentText}
+        ";
 
         string rawResponse = await CallGeminiAsync(prompt, ct);
         return CleanJson(rawResponse);

@@ -75,13 +75,15 @@ internal class GenerateConceptMapCommandHandler : IRequestHandler<GenerateConcep
         };
 
         var created = await _conceptMapRepository.AddAsync(conceptMap);
+        var cleanNodes = JsonSerializer.Deserialize<object>(created.NodesJson);
+        var cleanEdges = JsonSerializer.Deserialize<object>(created.EdgesJson);
 
         return new GenerateConceptMapResponseDto
         {
             ConceptMapId = created.Id,
-            NodesJson = created.NodesJson,
-            EdgesJson = created.EdgesJson,
-            Title = created.Title
+            Title = created.Title,
+            NodesJson = cleanNodes, 
+            EdgesJson = cleanEdges
         };
     }
     private class GeminiGraphResponse
