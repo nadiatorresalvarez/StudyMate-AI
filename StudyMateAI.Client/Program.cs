@@ -26,6 +26,6 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<StudyMateAI.Client.Services.SubjectService>();
 builder.Services.AddScoped<StudyMateAI.Client.Services.DocumentService>();
 builder.Services.AddScoped<StudyService>();
-
+builder.Services.AddScoped<ProfileService>();
 
 await builder.Build().RunAsync();
