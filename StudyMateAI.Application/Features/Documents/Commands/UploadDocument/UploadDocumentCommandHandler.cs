@@ -74,7 +74,7 @@ public class UploadDocumentCommandHandler : IRequestHandler<UploadDocumentComman
         {
             extractedText = ExtractText(buffer, ext);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             extractedText = string.Empty;
         }
