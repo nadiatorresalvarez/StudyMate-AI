@@ -2,8 +2,10 @@ using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using StudyMateAI.Application.Common.Exceptions;
 using StudyMateAI.Application.DTOs.Summary;
 using StudyMateAI.Application.UseCases.Summaries.Commands;
+using StudyMateAI.Application.UseCases.Summaries.Queries;
 
 namespace StudyMateAI.Controllers;
 
@@ -40,6 +42,7 @@ public class SummariesController : ControllerBase
             var result = await _mediator.Send(command);
             return Ok(new
             {
+                summaryId = result.SummaryId,
                 summaryText = result.SummaryText,
                 documentId = result.DocumentId,
                 createdAt = result.CreatedAt
@@ -76,6 +79,7 @@ public class SummariesController : ControllerBase
             var result = await _mediator.Send(command);
             return Ok(new
             {
+                summaryId = result.SummaryId,
                 summaryText = result.SummaryText,
                 documentId = result.DocumentId,
                 createdAt = result.CreatedAt
@@ -112,6 +116,7 @@ public class SummariesController : ControllerBase
             var result = await _mediator.Send(command);
             return Ok(new
             {
+                summaryId = result.SummaryId,
                 summaryText = result.SummaryText,
                 documentId = result.DocumentId,
                 createdAt = result.CreatedAt
@@ -124,6 +129,41 @@ public class SummariesController : ControllerBase
         catch (InvalidOperationException ex)
         {
             return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [HttpGet("{resumenId:int}/download")]
+    [ProducesResponseType(typeof(FileResult), 200)]
+    public async Task<IActionResult> DownloadResumenWord(int resumenId)
+    {
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userIdClaim))
+        {
+            return Unauthorized("No se pudo identificar al usuario.");
+        }
+
+        var query = new GetResumenWordQuery
+        {
+            UserId = int.Parse(userIdClaim),
+            ResumenId = resumenId
+        };
+
+        try
+        {
+            var fileDto = await _mediator.Send(query);
+            return File(fileDto.Content, fileDto.ContentType, fileDto.FileName);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return StatusCode(403, new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Error al generar el reporte.", details = ex.Message });
         }
     }
 }
