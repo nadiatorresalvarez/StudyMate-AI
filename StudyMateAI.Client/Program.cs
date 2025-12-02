@@ -24,5 +24,6 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<StudyMateAI.Client.Services.SubjectService>();
+builder.Services.AddScoped<StudyMateAI.Client.Services.DocumentService>();
 
 await builder.Build().RunAsync();
