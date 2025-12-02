@@ -136,13 +136,9 @@
     {
         try
         {
-            _document = await DocumentService.GetById(Id);
+            _document = await DocumentService.GetById(Id); 
             
-            // Solo intentamos cargar si el documento dice que tiene flashcards
-            if (_document != null && _document.FlashcardCount > 0)
-            {
-                await LoadFlashcards();
-            }
+            await LoadFlashcards();
         }
         catch (Exception ex)
         {
