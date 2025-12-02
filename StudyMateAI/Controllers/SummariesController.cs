@@ -42,6 +42,7 @@ public class SummariesController : ControllerBase
             var result = await _mediator.Send(command);
             return Ok(new
             {
+                summaryId = result.SummaryId,
                 summaryText = result.SummaryText,
                 documentId = result.DocumentId,
                 createdAt = result.CreatedAt
@@ -78,6 +79,7 @@ public class SummariesController : ControllerBase
             var result = await _mediator.Send(command);
             return Ok(new
             {
+                summaryId = result.SummaryId,
                 summaryText = result.SummaryText,
                 documentId = result.DocumentId,
                 createdAt = result.CreatedAt
@@ -114,6 +116,7 @@ public class SummariesController : ControllerBase
             var result = await _mediator.Send(command);
             return Ok(new
             {
+                summaryId = result.SummaryId,
                 summaryText = result.SummaryText,
                 documentId = result.DocumentId,
                 createdAt = result.CreatedAt
