@@ -24,6 +24,12 @@ builder.Services.AddHttpClient<IGeminiService, GeminiService>();
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateSubjectDtoValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<UpdateUserProfileRequestValidator>();
+builder.Services.AddScoped<IReportGenerator>(provider => 
+{
+    var config = provider.GetRequiredService<IConfiguration>();
+    var logoPath = config["ReportSettings:LogoPath"] ?? "wwwroot/images/logo-studymate.png";
+    return new ReportGenerator(logoPath);
+});
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]!);

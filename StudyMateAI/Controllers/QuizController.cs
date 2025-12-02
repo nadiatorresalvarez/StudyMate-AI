@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using StudyMateAI.Application.DTOs.Quizzes;
 using StudyMateAI.Application.UseCases.Quizzes.Commands;
 using StudyMateAI.Application.UseCases.Quizzes.Queries;
+using StudyMateAI.Application.Common.Exceptions;
 
 namespace StudyMateAI.Controllers;
 
@@ -180,5 +181,40 @@ public class QuizController : ControllerBase
 
         var result = await _mediator.Send(query);
         return Ok(result);
+    }
+
+    [HttpGet("{quizId:int}/download")]
+    [ProducesResponseType(typeof(FileResult), 200)]
+    public async Task<IActionResult> DownloadCuestionarioPdf(int quizId)
+    {
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userIdClaim))
+        {
+            return Unauthorized("No se pudo identificar al usuario.");
+        }
+
+        var query = new GetCuestionarioPdfQuery
+        {
+            UserId = int.Parse(userIdClaim),
+            CuestionarioId = quizId
+        };
+
+        try
+        {
+            var fileDto = await _mediator.Send(query);
+            return File(fileDto.Content, fileDto.ContentType, fileDto.FileName);
+        }
+        catch (StudyMateAI.Application.Common.Exceptions.NotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return StatusCode(403, new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Error al generar el reporte.", details = ex.Message });
+        }
     }
 }

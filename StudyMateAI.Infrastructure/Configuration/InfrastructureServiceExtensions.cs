@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using StudyMateAI.Infrastructure.Data;
 using StudyMateAI.Domain.Interfaces;
 using StudyMateAI.Infrastructure.Adapters.Repositories;
+using StudyMateAI.Infrastructure.Adapters.Reports;
 using StudyMateAI.Infrastructure.Adapters.Services;
 using StudyMateAI.Application.Common.Abstractions;
 using StudyMateAI.Infrastructure.Adapters.Storage;
@@ -40,6 +41,9 @@ namespace StudyMateAI.Infrastructure.Configuration
 
             // Almacenamiento de archivos (local por ahora)
             services.AddScoped<IFileStorage, LocalFileStorage>();
+            
+            // Registra el generador de reportes
+            services.AddScoped<IReportGenerator, ReportGenerator>();
             
             return services;
         }
