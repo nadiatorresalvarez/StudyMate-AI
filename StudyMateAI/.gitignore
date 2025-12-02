@@ -1,3 +1,16 @@
 # Storage local
 wwwroot/
+
+# Environment-specific settings (keep actual values out of git)
 appsettings.Development.json
+appsettings.Production.json
+
+# Dependencies and build
+bin/
+obj/
+.vs/
+.idea/
+
+# IDE
+*.user
+*.suo
