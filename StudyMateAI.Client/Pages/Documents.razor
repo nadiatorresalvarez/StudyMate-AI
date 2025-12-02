@@ -1,0 +1,173 @@
+@page "/documentos"
+@using Microsoft.AspNetCore.Authorization
+@using StudyMateAI.Client.DTOs.Document
+@using StudyMateAI.Client.Services
+@using StudyMateAI.Client.Components
+@inject DocumentService DocumentService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@attribute [Authorize]
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <div class="d-flex justify-space-between align-center mb-4">
+        <MudText Typo="Typo.h4">Mis Documentos</MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" 
+                   StartIcon="@Icons.Material.Filled.CloudUpload"
+                   OnClick="OpenUploadDialog">
+            Subir Nuevo
+        </MudButton>
+    </div>
+
+    @if (_loading)
+    {
+        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+    }
+    else if (_documents.Count == 0)
+    {
+        <MudAlert Severity="Severity.Info">No has subido documentos aún.</MudAlert>
+    }
+    else
+    {
+        <MudTable Items="_documents" Hover="true" Elevation="3" Breakpoint="Breakpoint.Sm">
+            <HeaderContent>
+                <MudTh>Tipo</MudTh>
+                <MudTh>Nombre</MudTh>
+                <MudTh>Materia</MudTh>
+                <MudTh>Estado</MudTh>
+                <MudTh>Recursos</MudTh>
+                <MudTh>Acciones</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Tipo">
+                    <MudIcon Icon="@GetIconForType(context.FileType)" Color="Color.Secondary" />
+                </MudTd>
+                
+                <!-- CAMBIO 1: Nombre ahora es un Link -->
+                <MudTd DataLabel="Nombre">
+                    <MudLink Href="@($"documentos/{context.Id}")" 
+                             Typo="Typo.body1" 
+                             Color="Color.Primary" 
+                             Underline="Underline.Hover"
+                             Style="font-weight: bold;">
+                        @context.OriginalFileName
+                    </MudLink>
+                    <MudText Typo="Typo.caption" Class="d-block">Subido: @context.CreatedAt.ToShortDateString()</MudText>
+                </MudTd>
+
+                <MudTd DataLabel="Materia">
+                    <MudChip T="string" Variant="Variant.Text" Color="Color.Primary">@context.SubjectName</MudChip>
+                </MudTd>
+                <MudTd DataLabel="Estado">
+                    @if (context.ProcessingStatus == "Completed")
+                    {
+                        <MudChip T="string" Color="Color.Success" Size="Size.Small">Listo</MudChip>
+                    }
+                    else if (context.ProcessingStatus == "Failed")
+                    {
+                         <MudChip T="string" Color="Color.Error" Size="Size.Small">Error</MudChip>
+                    }
+                    else
+                    {
+                        <MudChip T="string" Color="Color.Warning" Size="Size.Small">Procesando...</MudChip>
+                    }
+                </MudTd>
+                <MudTd DataLabel="Recursos">
+                    <MudTooltip Text="Resúmenes"><MudIcon Icon="@Icons.Material.Filled.Article" Size="Size.Small" Color="@(context.SummaryCount > 0 ? Color.Primary : Color.Default)"/></MudTooltip>
+                    <MudTooltip Text="Flashcards"><MudIcon Icon="@Icons.Material.Filled.ViewCarousel" Size="Size.Small" Color="@(context.FlashcardCount > 0 ? Color.Primary : Color.Default)"/></MudTooltip>
+                </MudTd>
+                
+                <!-- CAMBIO 2: Botón explícito para ver detalle -->
+                <MudTd DataLabel="Acciones">
+                    <MudTooltip Text="Ver Detalle">
+                        <MudIconButton Icon="@Icons.Material.Filled.Visibility" 
+                                       Color="Color.Info" 
+                                       Size="Size.Small" 
+                                       Href="@($"documentos/{context.Id}")"
+                                       Class="mr-2" />
+                    </MudTooltip>
+                    
+                    <MudTooltip Text="Eliminar">
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                                       Color="Color.Error" 
+                                       Size="Size.Small" 
+                                       OnClick="@(() => DeleteDocument(context.Id))" />
+                    </MudTooltip>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    }
+</MudContainer>
+
+@code {
+    private List<DocumentResponseDto> _documents = new();
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDocuments();
+    }
+
+    private async Task LoadDocuments()
+    {
+        _loading = true;
+        try
+        {
+            _documents = await DocumentService.GetAll();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task OpenUploadDialog()
+    {
+        var dialog = DialogService.Show<UploadDialog>("Subir Documento");
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            // El diálogo devuelve un objeto anónimo, lo casteamos
+            dynamic data = result.Data;
+            IBrowserFile file = data.File;
+            int subjectId = data.SubjectId;
+
+            try
+            {
+                Snackbar.Add("Subiendo archivo...", Severity.Info);
+                await DocumentService.UploadDocument(file, subjectId);
+                Snackbar.Add("Archivo subido. Procesando con IA...", Severity.Success);
+                await LoadDocuments();
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error al subir: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+
+    private async Task DeleteDocument(int id)
+    {
+        bool? result = await DialogService.ShowMessageBox("Borrar", "¿Eliminar este documento?", yesText: "Sí", cancelText: "No");
+        if (result == true)
+        {
+            await DocumentService.Delete(id);
+            await LoadDocuments();
+        }
+    }
+
+    private string GetIconForType(string type)
+    {
+        return type.ToUpper() switch
+        {
+            "PDF" => Icons.Material.Filled.PictureAsPdf,
+            "DOCX" => Icons.Material.Filled.Description,
+            "TXT" => Icons.Material.Filled.TextSnippet,
+            _ => Icons.Material.Filled.InsertDriveFile
+        };
+    }
+}

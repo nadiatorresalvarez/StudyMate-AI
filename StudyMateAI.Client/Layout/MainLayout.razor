@@ -1,0 +1,91 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@inherits LayoutComponentBase
+@inject NavigationManager NavManager
+@inject StudyMateAI.Client.Services.AuthService AuthService
+@inject AuthenticationStateProvider AuthStateProvider
+
+<!-- Aplicamos el tema personalizado aquí -->
+<MudThemeProvider Theme="_currentTheme" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="0" Color="Color.Surface" Fixed="true" Class="border-b mud-border-lines-default">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Primary" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        
+        <!-- Logo / Título con degradado sutil en el texto -->
+        <MudText Typo="Typo.h5" Class="ml-3" Style="font-weight: 700; color: #5C6BC0;">
+            StudyMate <span style="color: #26A69A;">AI</span>
+        </MudText>
+        
+        <MudSpacer />
+        
+        <AuthorizeView>
+            <Authorized>
+                <MudChip T="string" Icon="@Icons.Material.Filled.Person" Color="Color.Secondary" Variant="Variant.Text" Class="mr-4">
+                    @context.User.Identity?.Name
+                </MudChip>
+                <MudTooltip Text="Cerrar Sesión">
+                    <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Error" OnClick="CerrarSesion" />
+                </MudTooltip>
+            </Authorized>
+            <NotAuthorized>
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Href="/login">Entrar</MudButton>
+            </NotAuthorized>
+        </AuthorizeView>
+    </MudAppBar>
+
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="0" Class="border-r mud-border-lines-default bg-slate-50">
+        <NavMenu />
+    </MudDrawer>
+
+    <MudMainContent Class="pt-16 px-16">
+        <MudContainer MaxWidth="MaxWidth.Large" Class="mt-6 mb-10">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    bool _drawerOpen = true;
+
+    // DEFINICIÓN DEL TEMA PASTEL ELEGANTE
+    private MudTheme _currentTheme = new MudTheme()
+    {
+        PaletteLight = new PaletteLight()
+        {
+            Primary = "#7986CB",       // Azul Lavanda (Pastel fuerte)
+            Secondary = "#4DB6AC",     // Verde Azulado suave
+            Success = "#81C784",       // Verde Pastel
+            Info = "#64B5F6",          // Azul Cielo
+            Warning = "#FFB74D",       // Naranja suave
+            Error = "#E57373",         // Rojo suave
+            AppbarBackground = "#FFFFFF",
+            AppbarText = "#424242",
+            Background = "#F5F7FA",    // Gris muy muy claro (Casi blanco)
+            DrawerBackground = "#FFFFFF",
+            Surface = "#FFFFFF",
+            TextPrimary = "#424242",
+            TextSecondary = "#757575"
+        },
+        Typography = new Typography()
+        {
+            Default = new Default()
+            {
+                FontFamily = new[] { "Segoe UI", "Helvetica", "Arial", "sans-serif" }
+            }
+        }
+    };
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private async Task CerrarSesion()
+    {
+        await AuthService.Logout();
+        NavManager.NavigateTo("/login");
+    }
+}

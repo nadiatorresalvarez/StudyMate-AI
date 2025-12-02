@@ -1,0 +1,82 @@
+@using StudyMateAI.Client.DTOs.Subject
+@using StudyMateAI.Client.Services
+@inject SubjectService SubjectService
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.CloudUpload" Class="mr-3 mb-n1"/>
+            Subir Documento
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm>
+            <!-- 1. Seleccionar Materia -->
+            <MudSelect T="int" Label="Materia" @bind-Value="SubjectId" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+                @foreach (var subject in _subjects)
+                {
+                    <MudSelectItem Value="@subject.Id">@subject.Name</MudSelectItem>
+                }
+            </MudSelect>
+
+            <!-- 2. Seleccionar Archivo -->
+            <MudFileUpload T="IBrowserFile" OnFilesChanged="OnFilesChanged" Class="mt-4">
+                <ActivatorContent>
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               StartIcon="@Icons.Material.Filled.AttachFile">
+                        Seleccionar Archivo (PDF, Word)
+                    </MudButton>
+                </ActivatorContent>
+            </MudFileUpload>
+
+            @if (_selectedFile != null)
+            {
+                <MudAlert Severity="Severity.Info" Class="mt-2" Dense="true">
+                    @_selectedFile.Name (@(_selectedFile.Size / 1024) KB)
+                </MudAlert>
+            }
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancelar</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" 
+                   OnClick="Submit" 
+                   Disabled="@(_selectedFile == null || SubjectId == 0 || _uploading)">
+            @if (_uploading) { <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2"/> }
+            Subir
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
+
+    private List<SubjectResponseDto> _subjects = new();
+    private int SubjectId { get; set; }
+    private IBrowserFile? _selectedFile;
+    private bool _uploading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _subjects = await SubjectService.GetAll();
+    }
+
+    private void OnFilesChanged(InputFileChangeEventArgs e)
+    {
+        _selectedFile = e.File;
+    }
+
+    private async Task Submit()
+    {
+        _uploading = true;
+        // Aquí no llamamos al servicio, devolvemos los datos al padre para que él llame
+        // O podemos llamar al servicio aquí si pasamos el servicio inyectado.
+        // Haremos lo segundo para encapsular la lógica.
+        
+        MudDialog.Close(DialogResult.Ok(new { File = _selectedFile, SubjectId = SubjectId }));
+    }
+
+    void Cancel() => MudDialog.Cancel();
+}

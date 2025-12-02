@@ -1,0 +1,153 @@
+@page "/materias"
+@using Microsoft.AspNetCore.Authorization
+@using StudyMateAI.Client.DTOs.Subject
+@using StudyMateAI.Client.Services
+@using StudyMateAI.Client.Components
+@inject SubjectService SubjectService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@attribute [Authorize]
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <div class="d-flex justify-space-between align-center mb-4">
+        <MudText Typo="Typo.h4">Mis Materias</MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" 
+                   StartIcon="@Icons.Material.Filled.Add"
+                   OnClick="OpenCreateDialog">
+            Nueva Materia
+        </MudButton>
+    </div>
+
+    @if (_loading)
+    {
+        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+    }
+    else if (_subjects.Count == 0)
+    {
+        <MudAlert Severity="Severity.Info">No tienes materias creadas aún.</MudAlert>
+    }
+    else
+    {
+        <MudGrid>
+            @foreach (var subject in _subjects)
+            {
+                <MudItem xs="12" sm="6" md="4">
+                    <MudCard Elevation="3" Style="@($"border-left: 5px solid {subject.Color}")">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">@subject.Name</MudText>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Default" OnClick="@(() => OpenEditDialog(subject))" />
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(() => DeleteSubject(subject))" />
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudText Typo="Typo.body2">@subject.Description</MudText>
+                            <MudChip T="string" Color="Color.Primary" Size="Size.Small" Class="mt-2">
+                                @subject.DocumentCount Documentos
+                            </MudChip>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    }
+</MudContainer>
+
+@code {
+    private List<SubjectResponseDto> _subjects = new();
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSubjects();
+    }
+
+    private async Task LoadSubjects()
+    {
+        _loading = true;
+        try
+        {
+            _subjects = await SubjectService.GetAll();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error cargando materias", Severity.Error);
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    // CREAR
+    private async Task OpenCreateDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var dialog = DialogService.Show<SubjectDialog>("Nueva Materia", options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            var newSubject = (CreateSubjectDto)result.Data;
+            await SubjectService.Create(newSubject);
+            await LoadSubjects();
+            Snackbar.Add("Materia creada", Severity.Success);
+        }
+    }
+
+    // EDITAR
+    private async Task OpenEditDialog(SubjectResponseDto subject)
+    {
+        // 1. Preparamos los datos del formulario
+        var model = new CreateSubjectDto 
+        { 
+            Name = subject.Name, 
+            Description = subject.Description, 
+            Color = subject.Color 
+        };
+
+        // 2. Pasamos el Modelo Y EL ID por separado
+        var parameters = new DialogParameters 
+        { 
+            ["Model"] = model,
+            ["Id"] = subject.Id 
+        };
+
+        var dialog = DialogService.Show<SubjectDialog>("Editar Materia", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            var updatedData = (CreateSubjectDto)result.Data;
+            
+            var updateDto = new UpdateSubjectDto
+            {
+                Name = updatedData.Name,
+                Description = updatedData.Description,
+                Color = updatedData.Color
+            };
+
+            await SubjectService.Update(subject.Id, updateDto);
+            await LoadSubjects();
+            Snackbar.Add("Materia actualizada", Severity.Success);
+        }
+    }
+
+    // BORRAR
+    private async Task DeleteSubject(SubjectResponseDto subject)
+    {
+        bool? result = await DialogService.ShowMessageBox(
+            "Eliminar Materia", 
+            $"¿Estás seguro de eliminar {subject.Name}? Se borrarán sus documentos.", 
+            yesText: "Eliminar", cancelText: "Cancelar");
+
+        if (result == true)
+        {
+            await SubjectService.Delete(subject.Id);
+            await LoadSubjects();
+            Snackbar.Add("Materia eliminada", Severity.Warning);
+        }
+    }
+}

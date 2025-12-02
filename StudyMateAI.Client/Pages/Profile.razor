@@ -1,0 +1,132 @@
+@page "/perfil"
+@using Microsoft.AspNetCore.Authorization
+@using StudyMateAI.Client.DTOs.Auth
+@using StudyMateAI.Client.DTOs.Profile
+@using StudyMateAI.Client.Services
+@inject ProfileService ProfileService
+@inject ISnackbar Snackbar
+@attribute [Authorize]
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-4">
+    <MudText Typo="Typo.h4" GutterBottom="true">Mi Perfil</MudText>
+
+    @if (_loading)
+    {
+        <MudPaper Class="pa-8">
+            <MudSkeleton SkeletonType="SkeletonType.Circle" Width="100px" Height="100px" Class="mx-auto" />
+            <MudSkeleton SkeletonType="SkeletonType.Text" Class="mt-4" />
+            <MudSkeleton SkeletonType="SkeletonType.Text" />
+            <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="56px" Class="mt-4" />
+        </MudPaper>
+    }
+    else if (_model != null)
+    {
+        <MudCard>
+            <MudCardContent>
+                <div class="d-flex justify-center mb-4">
+                    <MudAvatar ImageSrc="@_profileData?.ProfilePicture" Color="Color.Primary" Size="Size.Large" Style="width:100px; height:100px;">
+                        @_profileData?.Name.FirstOrDefault()
+                    </MudAvatar>
+                </div>
+                
+                <MudTextField T="string" Label="Correo Electrónico" Value="@_profileData?.Email" ReadOnly="true" Variant="Variant.Outlined" />
+
+                <MudForm @ref="_form" @bind-IsValid="@_success" Class="mt-4">
+                    <MudTextField T="string" @bind-Value="_model.Name" Label="Nombre Completo" For="@(() => _model.Name)"
+                                  Required="true" Variant="Variant.Outlined" />
+
+                    <MudSelect T="string" @bind-Value="_model.EducationLevel" Label="Nivel Educativo" For="@(() => _model.EducationLevel)"
+                               Required="true" Variant="Variant.Outlined" Class="mt-4">
+                        <MudSelectItem Value="@("Secundaria")">Secundaria</MudSelectItem>
+                        <MudSelectItem Value="@("Universitario")">Universitario</MudSelectItem>
+                        <MudSelectItem Value="@("Profesional")">Profesional</MudSelectItem>
+                        <MudSelectItem Value="@("Otro")">Otro</MudSelectItem>
+                    </MudSelect>
+                </MudForm>
+            </MudCardContent>
+            <MudCardActions Class="justify-end">
+                <MudButton Variant="Variant.Filled" 
+                           Color="Color.Primary" 
+                           OnClick="HandleSave" 
+                           Disabled="@_isSaving" 
+                           Class="ml-auto">
+                    @if (_isSaving)
+                    {
+                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+                        <MudText Class="ms-2">Guardando...</MudText>
+                    }
+                    else
+                    {
+                        <MudText>Guardar Cambios</MudText>
+                    }
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+    }
+</MudContainer>
+
+@code {
+    private bool _loading = true;
+    private bool _isSaving = false;
+    private bool _success;
+    private MudForm _form = default!;
+    
+    // El modelo para el formulario de edición
+    private UpdateUserProfileRequest _model = new();
+    
+    // Los datos completos que vienen del GET
+    private UserProfileDto? _profileData;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _profileData = await ProfileService.GetProfileAsync();
+            if (_profileData != null)
+            {
+                // Poblamos el modelo del formulario con los datos actuales
+                _model = new UpdateUserProfileRequest
+                {
+                    Name = _profileData.Name,
+                    EducationLevel = _profileData.EducationLevel ?? "Otro"
+                };
+            }
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("No se pudo cargar el perfil.", Severity.Error);
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task HandleSave()
+    {
+        await _form.Validate();
+        if (!_success)
+        {
+            Snackbar.Add("Por favor, corrige los errores.", Severity.Warning);
+            return;
+        }
+
+        _isSaving = true;
+        try
+        {
+            await ProfileService.UpdateProfileAsync(_model);
+            Snackbar.Add("Perfil actualizado correctamente.", Severity.Success);
+            
+            // Opcional: recargar los datos para confirmar visualmente
+            await OnInitializedAsync();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+        finally
+        {
+            _isSaving = false;
+        }
+    }
+}
