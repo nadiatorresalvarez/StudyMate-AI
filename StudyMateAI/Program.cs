@@ -55,7 +55,9 @@ builder.Services.AddScoped<IReportGenerator>(provider =>
 {
     var config = provider.GetRequiredService<IConfiguration>();
     var env = provider.GetRequiredService<IWebHostEnvironment>();
-    var logger = provider.GetRequiredService<ILogger<Program>>();
+    var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+    var logger = loggerFactory.CreateLogger<Program>();
+    var reportLogger = loggerFactory.CreateLogger("StudyMateAI.Infrastructure.Adapters.Reports.ReportGenerator");
     
     // Obtener ruta desde configuración o usar default
     var logoPath = config["ReportSettings:LogoPath"] ?? "images/logo-studymate.png";
@@ -63,19 +65,43 @@ builder.Services.AddScoped<IReportGenerator>(provider =>
     // Convertir a ruta absoluta dentro de wwwroot
     var fullLogoPath = Path.Combine(env.WebRootPath, logoPath);
     
+    logger.LogInformation("🔍 Verificando logo:");
+    logger.LogInformation("   - WebRootPath: {WebRoot}", env.WebRootPath);
+    logger.LogInformation("   - Ruta configurada: {ConfigPath}", logoPath);
+    logger.LogInformation("   - Ruta completa: {FullPath}", fullLogoPath);
+    logger.LogInformation("   - Directorio actual: {CurrentDir}", Directory.GetCurrentDirectory());
+    
     // Validar que el archivo exista
     if (!File.Exists(fullLogoPath))
     {
-        logger.LogWarning("Logo no encontrado en: {LogoPath}. Los documentos se generarán sin marca de agua.", fullLogoPath);
-        // Puedes decidir si usar una ruta vacía o una imagen por defecto
+        logger.LogWarning("⚠️ Logo NO encontrado en: {LogoPath}", fullLogoPath);
+        logger.LogWarning("   Los documentos se generarán sin marca de agua.");
+        
+        // Listar archivos en wwwroot/images para diagnóstico
+        var imagesDir = Path.Combine(env.WebRootPath, "images");
+        if (Directory.Exists(imagesDir))
+        {
+            var files = Directory.GetFiles(imagesDir);
+            logger.LogInformation("   Archivos en {ImagesDir}:", imagesDir);
+            foreach (var file in files)
+            {
+                logger.LogInformation("     - {FileName}", Path.GetFileName(file));
+            }
+        }
+        else
+        {
+            logger.LogWarning("   ❌ Directorio 'images' no existe en wwwroot");
+        }
+        
         fullLogoPath = string.Empty; // Sin marca de agua si no existe
     }
     else
     {
-        logger.LogInformation("Logo configurado correctamente en: {LogoPath}", fullLogoPath);
+        var fileInfo = new FileInfo(fullLogoPath);
+        logger.LogInformation("✅ Logo encontrado: {LogoPath} ({Size} bytes)", fullLogoPath, fileInfo.Length);
     }
     
-    return new ReportGenerator(fullLogoPath);
+    return new ReportGenerator(fullLogoPath, reportLogger as ILogger<ReportGenerator>);
 });
 
 // ✨ MEJORADO: Configuración de archivos estáticos (para el logo)
