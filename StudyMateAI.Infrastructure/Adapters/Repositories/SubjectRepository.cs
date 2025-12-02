@@ -21,6 +21,7 @@ namespace StudyMateAI.Infrastructure.Adapters.Repositories
         {
             return await _dbSet
                 .Where(s => s.UserId == userId)
+                .Include(s => s.Documents)
                 .OrderBy(s => s.OrderIndex)
                 .ThenBy(s => s.Name)
                 .ToListAsync();
