@@ -47,6 +47,28 @@ builder.Services.AddFluentValidationAutoValidation(config =>
     // Deshabilitar validación implícita de DataAnnotations para evitar conflictos
     config.DisableDataAnnotationsValidation = true;
 });
+
+// Esto permite que el Frontend (Blazor) hable con el Backend
+var blazorPolicy = "AllowBlazorClient";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: blazorPolicy,
+        policy =>
+        {
+            // AQUÍ: Más adelante, cuando creemos el proyecto Blazor,
+            // tendremos que venir a verificar que este puerto coincida.
+            // Por seguridad, en producción no uses AllowAnyOrigin.
+            policy.WithOrigins("http://localhost:5041")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+                .AllowCredentials();
+        });
+});
+
+// FluentValidation: registro de validación automática y escaneo de validadores
+builder.Services.AddFluentValidationAutoValidation();
+
 builder.Services.AddValidatorsFromAssemblyContaining<CreateSubjectDtoValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<UpdateUserProfileRequestValidator>();
 
@@ -242,11 +264,11 @@ app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 
-// ✨ AÑADIDO: CORS antes de Authentication
 app.UseCors("AllowFrontend");
+app.UseCors("AllowBlazorClient"); 
 
-app.UseAuthentication(); // ¿Quién eres?
-app.UseAuthorization();  // ¿Qué puedes hacer?
+app.UseAuthentication(); // <-- PRIMERO (¿Quién eres?)
+app.UseAuthorization();  // <-- SEGUNDO (¿Qué puedes hacer?)
 
 app.MapControllers();
 
