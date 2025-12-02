@@ -41,10 +41,19 @@
                 <MudTd DataLabel="Tipo">
                     <MudIcon Icon="@GetIconForType(context.FileType)" Color="Color.Secondary" />
                 </MudTd>
+                
+                <!-- CAMBIO 1: Nombre ahora es un Link -->
                 <MudTd DataLabel="Nombre">
-                    <MudText Typo="Typo.body1" Style="font-weight: bold;">@context.OriginalFileName</MudText>
-                    <MudText Typo="Typo.caption">Subido: @context.CreatedAt.ToShortDateString()</MudText>
+                    <MudLink Href="@($"documentos/{context.Id}")" 
+                             Typo="Typo.body1" 
+                             Color="Color.Primary" 
+                             Underline="Underline.Hover"
+                             Style="font-weight: bold;">
+                        @context.OriginalFileName
+                    </MudLink>
+                    <MudText Typo="Typo.caption" Class="d-block">Subido: @context.CreatedAt.ToShortDateString()</MudText>
                 </MudTd>
+
                 <MudTd DataLabel="Materia">
                     <MudChip T="string" Variant="Variant.Text" Color="Color.Primary">@context.SubjectName</MudChip>
                 </MudTd>
@@ -63,12 +72,26 @@
                     }
                 </MudTd>
                 <MudTd DataLabel="Recursos">
-                    <!-- Aquí pondremos iconos de flashcards, test, etc -->
                     <MudTooltip Text="Resúmenes"><MudIcon Icon="@Icons.Material.Filled.Article" Size="Size.Small" Color="@(context.SummaryCount > 0 ? Color.Primary : Color.Default)"/></MudTooltip>
                     <MudTooltip Text="Flashcards"><MudIcon Icon="@Icons.Material.Filled.ViewCarousel" Size="Size.Small" Color="@(context.FlashcardCount > 0 ? Color.Primary : Color.Default)"/></MudTooltip>
                 </MudTd>
+                
+                <!-- CAMBIO 2: Botón explícito para ver detalle -->
                 <MudTd DataLabel="Acciones">
-                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="@(() => DeleteDocument(context.Id))" />
+                    <MudTooltip Text="Ver Detalle">
+                        <MudIconButton Icon="@Icons.Material.Filled.Visibility" 
+                                       Color="Color.Info" 
+                                       Size="Size.Small" 
+                                       Href="@($"documentos/{context.Id}")"
+                                       Class="mr-2" />
+                    </MudTooltip>
+                    
+                    <MudTooltip Text="Eliminar">
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                                       Color="Color.Error" 
+                                       Size="Size.Small" 
+                                       OnClick="@(() => DeleteDocument(context.Id))" />
+                    </MudTooltip>
                 </MudTd>
             </RowTemplate>
         </MudTable>

@@ -1,0 +1,216 @@
+@page "/documentos/{Id:int}"
+@using StudyMateAI.Client.DTOs.Document
+@using StudyMateAI.Client.DTOs.Flashcards
+@using StudyMateAI.Client.Services
+@inject DocumentService DocumentService
+@inject StudyService StudyService
+@inject ISnackbar Snackbar
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    @if (_document == null)
+    {
+        <!-- Estado de Carga -->
+        <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+        <MudText Align="Align.Center" Class="mt-4">Cargando documento...</MudText>
+    }
+    else
+    {
+        <!-- Encabezado -->
+        <div class="d-flex align-center mb-4">
+            <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Href="documentos" Color="Color.Inherit" Class="mr-3" />
+            <div>
+                <MudText Typo="Typo.h4">@_document.OriginalFileName</MudText>
+                <MudChip T="string" Color="Color.Primary" Variant="Variant.Text">
+                    @(_document.SubjectName ?? "Sin Materia")
+                </MudChip>
+            </div>
+        </div>
+
+        <!-- Pestañas -->
+        <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" KeepPanelsAlive="true">
+            
+            <!-- 1. RESUMEN -->
+            <MudTabPanel Text="Resumen" Icon="@Icons.Material.Filled.Article">
+                <MudGrid>
+                    <MudItem xs="12" md="3">
+                        <MudPaper Class="pa-4" Elevation="2">
+                            <MudText Typo="Typo.h6" Class="mb-4">Generar con IA</MudText>
+                            <MudButton Variant="Variant.Outlined" Color="Color.Primary" FullWidth="true" Class="mb-2"
+                                       OnClick="@(() => LoadSummary("brief"))" Disabled="_loadingSummary">Breve</MudButton>
+                            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" FullWidth="true" Class="mb-2"
+                                       OnClick="@(() => LoadSummary("detailed"))" Disabled="_loadingSummary">Detallado</MudButton>
+                            <MudButton Variant="Variant.Outlined" Color="Color.Tertiary" FullWidth="true"
+                                       OnClick="@(() => LoadSummary("concepts"))" Disabled="_loadingSummary">Conceptos</MudButton>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="12" md="9">
+                        @if (_loadingSummary)
+                        {
+                            <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="200px" />
+                            <MudText Align="Align.Center" Class="mt-2">Analizando documento...</MudText>
+                        }
+                        else if (string.IsNullOrEmpty(_summaryText))
+                        {
+                            <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">Selecciona un tipo de resumen para comenzar.</MudAlert>
+                        }
+                        else
+                        {
+                            <MudPaper Class="pa-6" Elevation="1" Style="background-color: #FAFAFA; border-left: 4px solid #7986CB;">
+                                <!-- CORRECCIÓN: Manejo seguro de MarkupString -->
+                                <MudText Typo="Typo.body1" Style="white-space: pre-line; line-height: 1.6;">
+                                    @((MarkupString)(_summaryText ?? ""))
+                                </MudText>
+                            </MudPaper>
+                        }
+                    </MudItem>
+                </MudGrid>
+            </MudTabPanel>
+
+            <!-- 2. FLASHCARDS -->
+            <MudTabPanel Text="Flashcards" Icon="@Icons.Material.Filled.ViewCarousel">
+                @if (_loadingFlashcards)
+                {
+                     <MudProgressLinear Indeterminate="true" Color="Color.Secondary" />
+                     <MudText Class="mt-2">Generando tarjetas...</MudText>
+                }
+                else if (_flashcards == null || _flashcards.Count == 0)
+                {
+                     <MudAlert Severity="Severity.Info" Class="mb-4">Este documento no tiene tarjetas aún.</MudAlert>
+                     <MudButton Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.AutoAwesome" 
+                                OnClick="GenerateFlashcards" Size="Size.Large">
+                         Generar Flashcards con IA
+                     </MudButton>
+                }
+                else
+                {
+                    <div class="d-flex justify-end mb-4">
+                        <MudButton StartIcon="@Icons.Material.Filled.Refresh" OnClick="GenerateFlashcards" Color="Color.Default">Regenerar</MudButton>
+                    </div>
+                    <MudGrid>
+                        <!-- CORRECCIÓN: @key es vital para evitar el error de RenderTree -->
+                        @foreach (var card in _flashcards)
+                        {
+                            <MudItem xs="12" sm="6" md="4" @key="card.Id">
+                                <MudCard Elevation="2" Class="h-100">
+                                    <MudCardHeader>
+                                        <CardHeaderContent>
+                                            <MudChip T="string" Size="Size.Small" Color="@GetDifficultyColor(card.Difficulty)">
+                                                @(card.Difficulty ?? "Medium")
+                                            </MudChip>
+                                        </CardHeaderContent>
+                                    </MudCardHeader>
+                                    <MudCardContent>
+                                        <MudText Typo="Typo.subtitle2" Color="Color.Secondary">Pregunta:</MudText>
+                                        <MudText Typo="Typo.h6" Class="mb-3" Style="font-weight: 600;">@card.Question</MudText>
+                                        <MudDivider Class="my-2"/>
+                                        <MudText Typo="Typo.subtitle2" Color="Color.Success">Respuesta:</MudText>
+                                        <MudText Typo="Typo.body1">@card.Answer</MudText>
+                                    </MudCardContent>
+                                </MudCard>
+                            </MudItem>
+                        }
+                    </MudGrid>
+                }
+            </MudTabPanel>
+
+            <MudTabPanel Text="Mapa Mental" Icon="@Icons.Material.Filled.Hub" Disabled="true">
+                <MudText>Próximamente...</MudText>
+            </MudTabPanel>
+
+        </MudTabs>
+    }
+</MudContainer>
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private DocumentResponseDto? _document;
+    private string _summaryText = "";
+    private bool _loadingSummary = false;
+    
+    // Inicializamos la lista para que no sea null nunca
+    private List<FlashcardResponseDto> _flashcards = new(); 
+    private bool _loadingFlashcards = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _document = await DocumentService.GetById(Id);
+            
+            // Solo intentamos cargar si el documento dice que tiene flashcards
+            if (_document != null && _document.FlashcardCount > 0)
+            {
+                await LoadFlashcards();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString()); // Log para ver el error real si ocurre
+            Snackbar.Add("Error cargando documento", Severity.Error);
+        }
+    }
+
+    private async Task LoadSummary(string type)
+    {
+        _loadingSummary = true;
+        try
+        {
+            _summaryText = await StudyService.GenerateSummary(Id, type);
+            Snackbar.Add("Resumen generado", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _loadingSummary = false;
+        }
+    }
+
+    private async Task LoadFlashcards()
+    {
+        try
+        {
+            var cards = await StudyService.GetFlashcards(Id);
+            if (cards != null)
+            {
+                _flashcards = cards;
+            }
+        }
+        catch (Exception) { /* Ignorar errores silenciosos de carga inicial */ }
+    }
+
+    private async Task GenerateFlashcards()
+    {
+        _loadingFlashcards = true;
+        try
+        {
+            await StudyService.GenerateFlashcards(Id);
+            await LoadFlashcards();
+            Snackbar.Add("Flashcards generadas", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _loadingFlashcards = false;
+        }
+    }
+
+    private Color GetDifficultyColor(string? difficulty)
+    {
+        if (string.IsNullOrEmpty(difficulty)) return Color.Default;
+
+        return difficulty.ToLower() switch
+        {
+            "easy" => Color.Success,
+            "medium" => Color.Warning,
+            "hard" => Color.Error,
+            _ => Color.Default
+        };
+    }
+}
