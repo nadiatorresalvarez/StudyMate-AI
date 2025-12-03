@@ -1,6 +1,8 @@
 using System.Net.Http.Json;
 using StudyMateAI.Client.DTOs.Flashcards;
 using StudyMateAI.Client.DTOs.Summary;
+using StudyMateAI.Client.DTOs.Mindmap;
+using StudyMateAI.Client.DTOs.ConceptMap;
 
 namespace StudyMateAI.Client.Services;
 
@@ -33,7 +35,6 @@ public class StudyService
             throw new Exception("Error al generar flashcards.");
         }
     }
-
     // --- RESÚMENES ---
 
     public async Task<string> GenerateSummary(int documentId, string type)
@@ -56,5 +57,30 @@ public class StudyService
         var result = await response.Content.ReadFromJsonAsync<GenerateBriefSummaryResponseDto>();
             
         return result?.SummaryText ?? "Resumen vacío.";
+    }
+    // --- MAPAS ---
+
+    public async Task<GenerateMindMapResponseDto> GenerateMindMap(int documentId)
+    {
+        // Creamos el objeto command que espera el Backend
+        var command = new { DocumentId = documentId, UserId = 1 }; // Simulación de UserId por ahora
+
+        // Ruta corregida: /api/Maps/mindmap/generate
+        var response = await _http.PostAsJsonAsync("api/Maps/mindmap/generate", command);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<GenerateMindMapResponseDto>()
+               ?? throw new Exception("Respuesta inválida del servidor.");
+    }
+
+    public async Task<GenerateConceptMapResponseDto> GenerateConceptMap(int documentId)
+    {
+        // Creamos el objeto command que espera el Backend
+        var command = new { DocumentId = documentId, UserId = 1 }; // Simulación de UserId
+            
+        // Ruta corregida: /api/Maps/conceptmap/generate
+        var response = await _http.PostAsJsonAsync("api/Maps/conceptmap/generate", command);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<GenerateConceptMapResponseDto>()
+               ?? throw new Exception("Respuesta inválida del servidor.");
     }
 }

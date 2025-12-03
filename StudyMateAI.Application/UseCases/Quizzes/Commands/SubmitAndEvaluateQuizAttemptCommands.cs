@@ -140,7 +140,10 @@ internal class EvaluateQuizAttemptCommandHandler : IRequestHandler<EvaluateQuizA
                 SelectedOption = submitted?.SelectedOption,
                 SelectedAnswerText = submitted?.AnswerText,
                 CorrectAnswer = question.CorrectAnswer,
-                IsCorrect = isCorrect
+                IsCorrect = isCorrect,
+                Options = !string.IsNullOrEmpty(question.OptionsJson)
+                ? JsonSerializer.Deserialize<List<string>>(question.OptionsJson) ?? new List<string>()
+                : new List<string>()
             });
         }
 

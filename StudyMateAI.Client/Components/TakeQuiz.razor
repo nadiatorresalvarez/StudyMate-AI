@@ -1,0 +1,142 @@
+@using StudyMateAI.Client.DTOs.Quiz
+@using StudyMateAI.Client.Services
+@using Size = MudBlazor.Size
+
+@inject QuizService QuizService
+@inject ISnackbar Snackbar
+
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">@Quiz.Title</MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (_currentQuestion != null)
+        {
+            <MudText Typo="Typo.h6" Align="Align.Center" GutterBottom="true">Pregunta @(_currentQuestionIndex + 1) de @Quiz.Questions.Count</MudText>
+            <MudPaper Outlined="true" Class="pa-6 my-4">
+                <MudText Typo="Typo.h5" GutterBottom="true">@_currentQuestion.QuestionText</MudText>
+                
+                @if (_currentQuestion.QuestionType == "MultipleChoice")
+                {
+                    <MudRadioGroup T="string" @bind-Value="_selectedAnswer">
+                        @foreach (var option in _currentQuestion.Options)
+                        {
+                            <MudRadio T="string" Value="@option" Color="Color.Primary" Class="d-block my-2">@option</MudRadio>
+                        }
+                    </MudRadioGroup>
+                }
+                else if (_currentQuestion.QuestionType == "TrueFalse")
+                {
+                    <MudRadioGroup T="string" @bind-Value="_selectedAnswer">
+                        <MudRadio T="string" Value="TrueValue" Color="Color.Success">Verdadero</MudRadio>
+                        <MudRadio T="string" Value="FalseValue" Color="Color.Error">Falso</MudRadio>
+                    </MudRadioGroup>
+                }
+            </MudPaper>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Disabled="_isSubmitting">Cerrar</MudButton>
+        <MudSpacer />
+
+        @if (_currentQuestionIndex > 0)
+        {
+            <MudButton OnClick="PreviousQuestion">Anterior</MudButton>
+        }
+        
+        @if (_currentQuestionIndex < Quiz.Questions.Count - 1)
+        {
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="NextQuestion">Siguiente</MudButton>
+        }
+        else
+        {
+            <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="SubmitQuiz" Disabled="_isSubmitting">
+                @if (_isSubmitting) { <MudProgressCircular Size="Size.Small" Indeterminate="true"/> }
+                Finalizar
+            </MudButton>
+        }
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public QuizForAttemptDto Quiz { get; set; } = new();
+
+    private Dictionary<int, string> _userAnswers = new();
+    private QuizQuestionForAttemptDto? _currentQuestion;
+    private int _currentQuestionIndex = 0;
+    private string? _selectedAnswer;
+    private bool _isSubmitting = false;
+    
+    private const string TrueValue = "Verdadero";
+    private const string FalseValue = "Falso";
+
+    protected override void OnInitialized()
+    {
+        _currentQuestion = Quiz.Questions.FirstOrDefault();
+    }
+
+    private void UpdateAnswer()
+    {
+        if (_currentQuestion != null && _selectedAnswer != null)
+        {
+            _userAnswers[_currentQuestion.QuestionId] = _selectedAnswer;
+        }
+    }
+
+    private void NextQuestion()
+    {
+        UpdateAnswer();
+        if (_currentQuestionIndex < Quiz.Questions.Count - 1)
+        {
+            _currentQuestionIndex++;
+            LoadQuestion();
+        }
+    }
+
+    private void PreviousQuestion()
+    {
+        UpdateAnswer();
+        if (_currentQuestionIndex > 0)
+        {
+            _currentQuestionIndex--;
+            LoadQuestion();
+        }
+    }
+
+    private void LoadQuestion()
+    {
+        _currentQuestion = Quiz.Questions[_currentQuestionIndex];
+        // Cargar respuesta previa si existe
+        _selectedAnswer = _userAnswers.ContainsKey(_currentQuestion.QuestionId) ? _userAnswers[_currentQuestion.QuestionId] : null;
+    }
+
+    private async Task SubmitQuiz()
+    {
+        UpdateAnswer();
+        _isSubmitting = true;
+
+        var request = new SubmitQuizAttemptRequestDto
+        {
+            Answers = _userAnswers.Select(a => new SubmittedAnswerDto
+            {
+                QuestionId = a.Key,
+                SelectedOption = a.Value
+            }).ToList()
+        };
+
+        try
+        {
+            var result = await QuizService.SubmitAndEvaluate(Quiz.QuizId, request);
+            MudDialog.Close(DialogResult.Ok(result));
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error al finalizar: {ex.Message}", Severity.Error);
+            _isSubmitting = false;
+        }
+    }
+
+    void Cancel() => MudDialog.Cancel();
+}
