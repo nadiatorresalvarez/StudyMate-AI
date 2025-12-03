@@ -1,4 +1,5 @@
 @page "/documentos/{Id:int}"
+@using System.Text.Json
 @using StudyMateAI.Client.Components
 @using StudyMateAI.Client.DTOs.Diagrams
 @using StudyMateAI.Client.DTOs.Document
@@ -155,33 +156,31 @@
                         <MudText Class="mt-2">La IA está dibujando las conexiones...</MudText>
                     </div>
                 }
-                else if (_nodes == null || _nodes.Count == 0)
+                else if (string.IsNullOrWhiteSpace(_displayNodesJson))
                 {
-                    <!-- Si no hay mapa, mostramos los botones para generar -->
                     <div class="d-flex flex-column align-center justify-center text-center pa-10">
                         <MudIcon Icon="@Icons.Material.Filled.Hub" Size="Size.Large" Class="mb-4" />
                         <MudText Typo="Typo.h5" GutterBottom="true">Visualiza las Conexiones</MudText>
-                        <MudText Class="mb-6">Genera un mapa mental o conceptual para entender las relaciones clave del texto.</MudText>
+                        <MudText Class="mb-6">Genera un mapa mental o conceptual para entender las relaciones clave.</MudText>
                         
                         <div class="d-flex gap-4">
-                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large"
-                                       OnClick="GenerateConceptMap">
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" OnClick="GenerateConceptMap">
                                 Generar Mapa Conceptual
                             </MudButton>
-                            
+                            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" Size="Size.Large" OnClick="GenerateMindMap">
+                                Generar Mapa Mental
+                            </MudButton>
                         </div>
                     </div>
                 }
                 else
                 {
-                    <!-- Si ya hay un mapa generado, mostramos el visor -->
                     <div class="d-flex justify-end mb-2">
                         <MudButton OnClick="ClearMap" StartIcon="@Icons.Material.Filled.Clear">Limpiar y Regenerar</MudButton>
                     </div>
-                    <MermaidViewer Nodes="@_nodes" Edges="@_edges" />
+                    <MermaidViewer NodesJson="@_displayNodesJson" EdgesJson="@_displayEdgesJson" />
                 }
             </MudTabPanel>
-
         </MudTabs>
     }
 </MudContainer>
@@ -197,6 +196,9 @@
     private bool _loadingMap = false;
     private List<DiagramNode>? _nodes;
     private List<DiagramEdge>? _edges;
+    
+    private string? _displayNodesJson;
+    private string? _displayEdgesJson;
     
     // Inicializamos la lista para que no sea null nunca
     private List<FlashcardResponseDto> _flashcards = new(); 
@@ -316,14 +318,16 @@
     private async Task GenerateConceptMap()
     {
         _loadingMap = true;
-        _nodes = null;
-        _edges = null;
+        ClearMap();
         try
         {
+            // 1. Obtenemos los DTOs con las listas de objetos
             var result = await StudyService.GenerateConceptMap(Id);
-            // Asignamos las listas directamente
-            _nodes = result.Nodes;
-            _edges = result.Edges;
+
+            // 2. Convertimos las listas de objetos a JSON strings para el visor
+            _displayNodesJson = JsonSerializer.Serialize(result.Nodes);
+            _displayEdgesJson = JsonSerializer.Serialize(result.Edges);
+            
             Snackbar.Add("Mapa Conceptual generado", Severity.Success);
         }
         catch (Exception ex)
@@ -335,24 +339,21 @@
             _loadingMap = false;
         }
     }
-    private void ClearMap()
-    {
-        _nodes = null;
-        _edges = null;
-    }
-}
-
-    // Este método lo dejaremos listo para el futuro
+    
     private async Task GenerateMindMap()
     {
         _loadingMap = true;
-        _nodesJson = null;
-        _edgesJson = null;
+        ClearMap();
         try
         {
+            // 1. Obtenemos el DTO con el string JSON jerárquico
             var result = await StudyService.GenerateMindMap(Id);
-            // La lógica para procesar el JSON jerárquico del mapa mental irá aquí
-            Snackbar.Add("Mapa Mental generado (lógica pendiente)", Severity.Info);
+
+            // 2. Asignamos directamente el string JSON del mapa mental
+            _displayNodesJson = result.NodesJson;
+            _displayEdgesJson = null; // Mapa mental no tiene aristas separadas
+            
+            Snackbar.Add("Mapa Mental generado", Severity.Success);
         }
         catch (Exception ex)
         {
@@ -364,10 +365,9 @@
         }
     }
     
-     Método para limpiar el mapa y mostrar de nuevo los botones de generar
     private void ClearMap()
     {
-        _nodesJson = null;
-        _edgesJson = null;
+        _displayNodesJson = null;
+        _displayEdgesJson = null;
     }
 }

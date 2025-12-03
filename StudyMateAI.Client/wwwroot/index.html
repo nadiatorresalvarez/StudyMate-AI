@@ -50,11 +50,13 @@
     window.renderMermaid = (elementId, graphDefinition) => {
         const element = document.getElementById(elementId);
         if (element) {
-            element.removeAttribute('data-processed'); // Forzamos el redibujado
+            element.removeAttribute('data-processed');
             element.innerHTML = graphDefinition;
             mermaid.run({
                 nodes: [element]
             });
+        } else {
+            console.error('Mermaid Error: Element with ID "' + elementId + '" not found.');
         }
     };
 </script>

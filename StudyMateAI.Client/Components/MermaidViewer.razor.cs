@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Components;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using StudyMateAI.Client.DTOs.Diagrams;
 using Microsoft.JSInterop;
-using System;
 
 namespace StudyMateAI.Client.Components
 {
@@ -15,61 +15,95 @@ namespace StudyMateAI.Client.Components
         private IJSRuntime JSRuntime { get; set; } = default!;
 
         [Parameter]
-        public List<DiagramNode>? Nodes { get; set; }
+        public string? NodesJson { get; set; }
 
         [Parameter]
-        public List<DiagramEdge>? Edges { get; set; }
+        public string? EdgesJson { get; set; }
 
         private string _elementId = $"mermaid-{Guid.NewGuid()}";
+        
+        // Variable para guardar el código generado
+        private string _mermaidCode = string.Empty;
 
-        protected override async Task OnParametersSetAsync()
+        // OnParametersSetAsync es ideal para PROCESAR datos
+        protected override Task OnParametersSetAsync()
         {
-            await RenderMap();
+            GenerateMermaidCode();
+            return base.OnParametersSetAsync();
         }
 
-        private async Task RenderMap()
+        // OnAfterRenderAsync es ideal para INTERACTUAR con JS
+        protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            string mermaidCode;
-
-            if (Nodes == null || Nodes.Count == 0)
+            // Solo llamamos a JS si tenemos código que renderizar
+            if (!string.IsNullOrEmpty(_mermaidCode))
             {
-                mermaidCode = "graph TD;\n  A[No hay datos para mostrar el mapa];";
+                await JSRuntime.InvokeVoidAsync("renderMermaid", _elementId, _mermaidCode);
+            }
+        }
+
+        private void GenerateMermaidCode()
+        {
+            if (!string.IsNullOrWhiteSpace(EdgesJson))
+            {
+                _mermaidCode = GenerateConceptMapCode();
+            }
+            else if (!string.IsNullOrWhiteSpace(NodesJson))
+            {
+                _mermaidCode = GenerateMindMapCode();
             }
             else
             {
-                try
-                {
-                    var sb = new StringBuilder();
-                    sb.AppendLine("graph TD;");
-
-                    foreach (var node in Nodes)
-                    {
-                        sb.AppendLine($"    {node.Id}[\"{node.Label.Replace("\"", "'")}\"];");
-                    }
-                    sb.AppendLine();
-
-                    if (Edges != null)
-                    {
-                        foreach (var edge in Edges)
-                        {
-                            if (!string.IsNullOrEmpty(edge.Label))
-                            {
-                                sb.AppendLine($"    {edge.Source} -- \"{edge.Label}\" --> {edge.Target};");
-                            }
-                            else
-                            {
-                                sb.AppendLine($"    {edge.Source} --> {edge.Target};");
-                            }
-                        }
-                    }
-                    mermaidCode = sb.ToString();
-                }
-                catch (Exception ex)
-                {
-                    mermaidCode = $"graph TD;\n  Error[\"Error: {ex.Message.Replace("\"", "'")}\"]";
-                }
+                _mermaidCode = string.Empty;
             }
-            await JSRuntime.InvokeVoidAsync("renderMermaid", _elementId, mermaidCode);
+        }
+
+        private string GenerateConceptMapCode()
+        {
+            try
+            {
+                var nodes = JsonSerializer.Deserialize<List<DiagramNode>>(NodesJson!);
+                var edges = JsonSerializer.Deserialize<List<DiagramEdge>>(EdgesJson!);
+                if (nodes == null) return string.Empty;
+                var sb = new StringBuilder("graph TD;");
+                foreach (var node in nodes) sb.AppendLine($"    {node.Id}[\"{node.Label.Replace("\"", "'")}\"];");
+                if (edges != null)
+                {
+                    foreach (var edge in edges)
+                    {
+                        if (!string.IsNullOrEmpty(edge.Label)) sb.AppendLine($"    {edge.Source} -->|\"{edge.Label.Replace("\"", "'")}\"| {edge.Target};");
+                        else sb.AppendLine($"    {edge.Source} --> {edge.Target};");
+                    }
+                }
+                return sb.ToString();
+            }
+            catch (Exception ex) { return $"graph TD;\n  Error[\"Error: {ex.Message.Replace("\"", "'")}\"]"; }
+        }
+
+        private string GenerateMindMapCode()
+        {
+            try
+            {
+                var rootNode = JsonSerializer.Deserialize<MindMapNode>(NodesJson!);
+                if (rootNode == null) return string.Empty;
+                var sb = new StringBuilder("graph TD;");
+                void Traverse(MindMapNode parent, string parentId)
+                {
+                    if (parent.Children == null) return;
+                    foreach (var child in parent.Children)
+                    {
+                        var childId = $"id_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+                        sb.AppendLine($"    {childId}[\"{child.Label.Replace("\"", "'")}\"];");
+                        sb.AppendLine($"    {parentId} --> {childId};");
+                        Traverse(child, childId);
+                    }
+                }
+                var rootId = "root";
+                sb.AppendLine($"{rootId}[\"{rootNode.Label.Replace("\"", "'")}\"];");
+                Traverse(rootNode, rootId);
+                return sb.ToString();
+            }
+            catch (Exception ex) { return $"graph TD;\n  Error[\"Error: {ex.Message.Replace("\"", "'")}\"]"; }
         }
     }
 }
