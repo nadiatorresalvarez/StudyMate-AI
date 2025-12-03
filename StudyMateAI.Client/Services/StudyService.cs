@@ -62,7 +62,11 @@ public class StudyService
 
     public async Task<GenerateMindMapResponseDto> GenerateMindMap(int documentId)
     {
-        var response = await _http.PostAsync($"api/Mindmap/generate/{documentId}", null);
+        // Creamos el objeto command que espera el Backend
+        var command = new { DocumentId = documentId, UserId = 1 }; // Simulación de UserId por ahora
+
+        // Ruta corregida: /api/Maps/mindmap/generate
+        var response = await _http.PostAsJsonAsync("api/Maps/mindmap/generate", command);
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadFromJsonAsync<GenerateMindMapResponseDto>()
                ?? throw new Exception("Respuesta inválida del servidor.");
@@ -70,7 +74,11 @@ public class StudyService
 
     public async Task<GenerateConceptMapResponseDto> GenerateConceptMap(int documentId)
     {
-        var response = await _http.PostAsync($"api/Conceptmap/generate/{documentId}", null);
+        // Creamos el objeto command que espera el Backend
+        var command = new { DocumentId = documentId, UserId = 1 }; // Simulación de UserId
+            
+        // Ruta corregida: /api/Maps/conceptmap/generate
+        var response = await _http.PostAsJsonAsync("api/Maps/conceptmap/generate", command);
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadFromJsonAsync<GenerateConceptMapResponseDto>()
                ?? throw new Exception("Respuesta inválida del servidor.");
