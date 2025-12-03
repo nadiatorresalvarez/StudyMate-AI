@@ -11,9 +11,13 @@
     </TitleContent>
     <DialogContent>
         <div class="d-flex justify-center align-center pa-4">
-            <MudProgressCircular Color="Color.Success" Value="@((int)Result.ScorePercent)" Size="Size.Large" Class="mr-6">
-                <MudText Typo="Typo.h5">@($"{Result.ScorePercent:F0}%")</MudText>
-            </MudProgressCircular>
+            <!-- ✅ CORREGIDO: MudProgressCircular no acepta ChildContent -->
+            <div class="position-relative d-flex justify-center align-center mr-6">
+                <MudProgressCircular Color="Color.Success" Value="@((int)Result.ScorePercent)" Size="Size.Large" />
+                <div class="position-absolute" style="top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                    <MudText Typo="Typo.h5">@($"{Result.ScorePercent:F0}%")</MudText>
+                </div>
+            </div>
             <div>
                 <MudText Typo="Typo.h6">Puntaje: @Result.CorrectAnswers / @Result.TotalQuestions</MudText>
                 <MudText Typo="Typo.body2" Class="mud-text-secondary">¡Sigue estudiando para mejorar!</MudText>
@@ -34,7 +38,6 @@
                         </div>
                     </TitleContent>
                     <ChildContent>
-                        <!-- CORRECCIÓN AQUÍ: Eliminamos Clickable="false" -->
                         <MudList T="string">
                             @foreach(var option in q.Options)
                             {

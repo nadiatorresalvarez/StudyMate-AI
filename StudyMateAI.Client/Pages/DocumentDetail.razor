@@ -6,7 +6,8 @@
 @using StudyMateAI.Client.DTOs.Flashcards
 @using StudyMateAI.Client.DTOs.Quiz
 @using StudyMateAI.Client.Services
-@inject DocumentService DocumentService
+@using StudyMateAI.Client.Services.Interfaces
+@inject IDocumentService DocumentService
 @inject StudyService StudyService
 @inject ISnackbar Snackbar
 
@@ -65,7 +66,6 @@
                         else
                         {
                             <MudPaper Class="pa-6" Elevation="1" Style="background-color: #FAFAFA; border-left: 4px solid #7986CB;">
-                                <!-- CORRECCIÓN: Manejo seguro de MarkupString -->
                                 <MudText Typo="Typo.body1" Style="white-space: pre-line; line-height: 1.6;">
                                     @((MarkupString)(_summaryText ?? ""))
                                 </MudText>
@@ -96,7 +96,6 @@
                         <MudButton StartIcon="@Icons.Material.Filled.Refresh" OnClick="GenerateFlashcards" Color="Color.Default">Regenerar</MudButton>
                     </div>
                     <MudGrid>
-                        <!-- CORRECCIÓN: @key es vital para evitar el error de RenderTree -->
                         @foreach (var card in _flashcards)
                         {
                             <MudItem xs="12" sm="6" md="4" @key="card.Id">
@@ -194,13 +193,10 @@
     private bool _startingQuiz = false;
     
     private bool _loadingMap = false;
-    private List<DiagramNode>? _nodes;
-    private List<DiagramEdge>? _edges;
     
     private string? _displayNodesJson;
     private string? _displayEdgesJson;
     
-    // Inicializamos la lista para que no sea null nunca
     private List<FlashcardResponseDto> _flashcards = new(); 
     private bool _loadingFlashcards = false;
 
@@ -214,7 +210,7 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.ToString()); // Log para ver el error real si ocurre
+            Console.WriteLine(ex.ToString());
             Snackbar.Add("Error cargando documento", Severity.Error);
         }
     }
@@ -287,18 +283,16 @@
         _startingQuiz = true;
         try
         {
-            // 1. Llamamos al servicio para generar el quiz y obtener su estructura
             var quizForAttempt = await QuizService.GenerateQuiz(Id);
 
-            // 2. Abrimos el quiz en un diálogo maximizado
             var parameters = new DialogParameters { ["Quiz"] = quizForAttempt };
             var options = new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true };
             var dialog = DialogService.Show<TakeQuiz>("Cuestionario", parameters, options);
 
             var result = await dialog.Result;
 
-            // 3. Si el usuario completó el quiz, mostramos los resultados
-            if (!result.Canceled)
+            // ✅ CORREGIDO: Manejo seguro de null
+            if (!result.Canceled && result.Data != null)
             {
                 var quizResult = (QuizAttemptResultDto)result.Data;
                 var resultParams = new DialogParameters { ["Result"] = quizResult };
@@ -315,16 +309,15 @@
             _startingQuiz = false;
         }
     }
+    
     private async Task GenerateConceptMap()
     {
         _loadingMap = true;
         ClearMap();
         try
         {
-            // 1. Obtenemos los DTOs con las listas de objetos
             var result = await StudyService.GenerateConceptMap(Id);
 
-            // 2. Convertimos las listas de objetos a JSON strings para el visor
             _displayNodesJson = JsonSerializer.Serialize(result.Nodes);
             _displayEdgesJson = JsonSerializer.Serialize(result.Edges);
             
@@ -346,12 +339,10 @@
         ClearMap();
         try
         {
-            // 1. Obtenemos el DTO con el string JSON jerárquico
             var result = await StudyService.GenerateMindMap(Id);
 
-            // 2. Asignamos directamente el string JSON del mapa mental
             _displayNodesJson = result.NodesJson;
-            _displayEdgesJson = null; // Mapa mental no tiene aristas separadas
+            _displayEdgesJson = null;
             
             Snackbar.Add("Mapa Mental generado", Severity.Success);
         }

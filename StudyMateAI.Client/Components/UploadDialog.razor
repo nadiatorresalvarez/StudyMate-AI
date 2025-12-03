@@ -1,8 +1,8 @@
 @using StudyMateAI.Client.DTOs.Subject
-@using StudyMateAI.Client.Services
+@using StudyMateAI.Client.Services.Interfaces
 @using Size = MudBlazor.Size
 
-@inject SubjectService SubjectService
+@inject ISubjectService SubjectService
 @inject ISnackbar Snackbar
 
 <MudDialog>
@@ -77,6 +77,7 @@
         // O podemos llamar al servicio aquí si pasamos el servicio inyectado.
         // Haremos lo segundo para encapsular la lógica.
         
+        await Task.CompletedTask;
         MudDialog.Close(DialogResult.Ok(new { File = _selectedFile, SubjectId = SubjectId }));
     }
 

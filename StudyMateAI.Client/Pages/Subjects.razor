@@ -1,9 +1,9 @@
 @page "/materias"
 @using Microsoft.AspNetCore.Authorization
 @using StudyMateAI.Client.DTOs.Subject
-@using StudyMateAI.Client.Services
+@using StudyMateAI.Client.Services.Interfaces
 @using StudyMateAI.Client.Components
-@inject SubjectService SubjectService
+@inject ISubjectService SubjectService
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 @attribute [Authorize]
@@ -75,7 +75,7 @@
         {
             _subjects = await SubjectService.GetAll();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             Snackbar.Add("Error cargando materias", Severity.Error);
         }
@@ -92,9 +92,8 @@
         var dialog = DialogService.Show<SubjectDialog>("Nueva Materia", options);
         var result = await dialog.Result;
 
-        if (!result.Canceled)
+        if (!result.Canceled && result.Data != null && result.Data is CreateSubjectDto newSubject)
         {
-            var newSubject = (CreateSubjectDto)result.Data;
             await SubjectService.Create(newSubject);
             await LoadSubjects();
             Snackbar.Add("Materia creada", Severity.Success);
@@ -108,7 +107,7 @@
         var model = new CreateSubjectDto 
         { 
             Name = subject.Name, 
-            Description = subject.Description, 
+            Description = subject.Description ?? string.Empty, // ✅ Corregido: línea 95
             Color = subject.Color 
         };
 
@@ -122,14 +121,12 @@
         var dialog = DialogService.Show<SubjectDialog>("Editar Materia", parameters);
         var result = await dialog.Result;
 
-        if (!result.Canceled)
+        if (!result.Canceled && result.Data != null && result.Data is CreateSubjectDto updatedData)
         {
-            var updatedData = (CreateSubjectDto)result.Data;
-            
             var updateDto = new UpdateSubjectDto
             {
                 Name = updatedData.Name,
-                Description = updatedData.Description,
+                Description = updatedData.Description ?? string.Empty, // ✅ Corregido: línea 124
                 Color = updatedData.Color
             };
 

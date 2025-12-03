@@ -1,9 +1,9 @@
 @page "/documentos"
 @using Microsoft.AspNetCore.Authorization
 @using StudyMateAI.Client.DTOs.Document
-@using StudyMateAI.Client.Services
+@using StudyMateAI.Client.Services.Interfaces
 @using StudyMateAI.Client.Components
-@inject DocumentService DocumentService
+@inject IDocumentService DocumentService
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 @attribute [Authorize]
@@ -48,7 +48,6 @@
                     <MudIcon Icon="@GetIconForType(context.FileType)" Color="Color.Secondary" />
                 </MudTd>
                 
-                <!-- CAMBIO 1: Nombre ahora es un Link -->
                 <MudTd DataLabel="Nombre">
                     <MudLink Href="@($"documentos/{context.Id}")" 
                              Typo="Typo.body1" 
@@ -82,7 +81,6 @@
                     <MudTooltip Text="Flashcards"><MudIcon Icon="@Icons.Material.Filled.ViewCarousel" Size="Size.Small" Color="@(context.FlashcardCount > 0 ? Color.Primary : Color.Default)"/></MudTooltip>
                 </MudTd>
                 
-                <!-- CAMBIO 2: Botón explícito para ver detalle -->
                 <MudTd DataLabel="Acciones">
                     <MudTooltip Text="Ver Detalle">
                         <MudIconButton Icon="@Icons.Material.Filled.Visibility" 
@@ -135,23 +133,26 @@
         var dialog = DialogService.Show<UploadDialog>("Subir Documento");
         var result = await dialog.Result;
 
-        if (!result.Canceled)
+        if (!result.Canceled && result.Data != null)
         {
-            // El diálogo devuelve un objeto anónimo, lo casteamos
+            // ✅ CORREGIDO: línea 138 - Manejo seguro de null
             dynamic data = result.Data;
-            IBrowserFile file = data.File;
-            int subjectId = data.SubjectId;
+            IBrowserFile? file = data?.File;
+            int subjectId = data?.SubjectId != null ? (int)data.SubjectId : 0;
 
-            try
+            if (file != null && subjectId > 0)
             {
-                Snackbar.Add("Subiendo archivo...", Severity.Info);
-                await DocumentService.UploadDocument(file, subjectId);
-                Snackbar.Add("Archivo subido. Procesando con IA...", Severity.Success);
-                await LoadDocuments();
-            }
-            catch (Exception ex)
-            {
-                Snackbar.Add($"Error al subir: {ex.Message}", Severity.Error);
+                try
+                {
+                    Snackbar.Add("Subiendo archivo...", Severity.Info);
+                    await DocumentService.UploadDocument(file, subjectId);
+                    Snackbar.Add("Archivo subido. Procesando con IA...", Severity.Success);
+                    await LoadDocuments();
+                }
+                catch (Exception ex)
+                {
+                    Snackbar.Add($"Error al subir: {ex.Message}", Severity.Error);
+                }
             }
         }
     }

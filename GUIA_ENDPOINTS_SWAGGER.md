@@ -37,7 +37,7 @@
 
 ```json
 "GoogleAuth": {
-  "ClientId": "243617391779-bbpid9u341f3osn1bmtaas8aifd0druq.apps.googleusercontent.com"
+  "ClientId": "519517973496-6qtam58eeshie6g1ig88ublmqfb46kdh.apps.googleusercontent.com"
 }
 ```
 

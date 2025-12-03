@@ -1,0 +1,188 @@
+@page "/login"
+@using StudyMateAI.Client.Services.Interfaces
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IAuthService AuthService
+@inject NavigationManager NavManager
+@inject IJSRuntime JS
+@inject ISnackbar Snackbar
+@implements IAsyncDisposable
+
+@layout LoginLayout
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center justify-center mud-width-full" Style="height: 100vh;">
+    <MudPaper Elevation="25" Class="pa-8" Width="100%" MaxWidth="450px">
+        <div class="d-flex flex-column align-center gap-4">
+            <!-- Logo -->
+            <MudIcon Icon="@Icons.Material.Filled.School" 
+                     Color="Color.Primary" 
+                     Size="Size.Large" 
+                     Style="width: 64px; height: 64px;" />
+            
+            <!-- Título -->
+            <MudText Typo="Typo.h4" Color="Color.Primary" Class="mb-2" Align="Align.Center">
+                StudyMate AI
+            </MudText>
+
+            <MudText Typo="Typo.body2" Align="Align.Center" Class="mb-6">
+                Plataforma de estudio inteligente con IA
+            </MudText>
+
+            <!-- Divisor -->
+            <MudDivider Class="my-2" />
+
+            <!-- Mensaje de carga INICIAL -->
+            @if (_isInitializing)
+            {
+                <MudStack Class="mud-width-full" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudProgressCircular Indeterminate="true" />
+                    <MudText Typo="Typo.body2">Inicializando Google Sign-In...</MudText>
+                </MudStack>
+            }
+            
+            <!-- Botón de Google - SIEMPRE PRESENTE pero oculto si está inicializando -->
+            <div id="google-button-container" class="mud-width-full" style="@(_isInitializing ? "display: none;" : "")"></div>
+
+            <!-- Mensaje de procesamiento -->
+            @if (_isProcessing)
+            {
+                <MudStack Class="mud-width-full" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudProgressCircular Indeterminate="true" />
+                    <MudText Typo="Typo.body2">Verificando credenciales...</MudText>
+                </MudStack>
+            }
+            else if (!_isInitializing)
+            {
+                <!-- Texto de ayuda -->
+                <MudText Typo="Typo.caption" Align="Align.Center" Class="mt-4">
+                    Haz clic en el botón arriba para iniciar sesión con tu cuenta de Google
+                </MudText>
+            }
+        </div>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private DotNetObjectReference<Login>? dotnetHelper;
+    private bool _isInitializing = true;
+    private bool _isProcessing = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Verificar si ya está autenticado
+            var isAuthenticated = await AuthService.IsAuthenticated();
+            if (isAuthenticated)
+            {
+                NavManager.NavigateTo("/");
+                return;
+            }
+
+            // Crear referencia para JS Interop
+            dotnetHelper = DotNetObjectReference.Create(this);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error al inicializar: {ex.Message}", Severity.Error);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                // Obtener Google Client ID desde appsettings
+                // Por ahora usamos una variable de entorno o valor hardcodeado
+                var googleClientId = await JS.InvokeAsync<string>("eval", "window.GoogleClientId || ''");
+                
+                if (string.IsNullOrEmpty(googleClientId))
+                {
+                    // Fallback a valor directo
+                    googleClientId = "519517973496-6qtam58eeshie6g1ig88ublmqfb46kdh.apps.googleusercontent.com";
+                }
+
+                // Inicializar Google Auth
+                if (dotnetHelper != null)
+                {
+                    await JS.InvokeVoidAsync("googleAuth.initialize", dotnetHelper, googleClientId);
+                }
+
+                _isInitializing = false;
+                await InvokeAsync(StateHasChanged);
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error al inicializar Google Sign-In: {ex.Message}", Severity.Error);
+                System.Diagnostics.Debug.WriteLine($"Error: {ex}");
+                _isInitializing = false;
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Método invocado desde JavaScript cuando el usuario inicia sesión con Google
+    /// </summary>
+    [JSInvokable]
+    public async Task LoginCallback(string googleToken)
+    {
+        _isProcessing = true;
+        await InvokeAsync(StateHasChanged);
+
+        try
+        {
+            if (string.IsNullOrEmpty(googleToken))
+            {
+                Snackbar.Add("Token de Google inválido", Severity.Error);
+                return;
+            }
+
+            // Llamar al servicio de autenticación
+            var success = await AuthService.LoginWithGoogle(googleToken);
+
+            if (success)
+            {
+                Snackbar.Add("¡Bienvenido! Iniciando sesión...", Severity.Success);
+                // Esperar un momento antes de redirigir
+                await Task.Delay(500);
+                NavManager.NavigateTo("/", forceLoad: true);
+            }
+            else
+            {
+                Snackbar.Add("Error al autenticar. Por favor, intenta de nuevo.", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error en el proceso de login: {ex.Message}", Severity.Error);
+            System.Diagnostics.Debug.WriteLine($"Error en LoginCallback: {ex}");
+        }
+        finally
+        {
+            _isProcessing = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    /// <summary>
+    /// Método invocado desde JavaScript si ocurre un error en Google Sign-In
+    /// </summary>
+    [JSInvokable]
+    public async Task LoginError(string errorMessage)
+    {
+        Snackbar.Add($"Error de Google: {errorMessage}", Severity.Error);
+        _isProcessing = false;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (dotnetHelper is not null)
+        {
+            dotnetHelper.Dispose();
+        }
+        await Task.CompletedTask;
+    }
+}

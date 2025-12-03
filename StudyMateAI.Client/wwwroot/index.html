@@ -7,16 +7,18 @@
     <title>StudyMateAI.Client</title>
     <base href="/" />
 
-    <!-- Estos son tus estilos base -->
+    <!-- Bootstrap y Estilos Base -->
     <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/app.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
     <link href="StudyMateAI.Client.styles.css" rel="stylesheet" />
 
-    <!-- 1. ESTO ES LO QUE FALTABA (CSS de MudBlazor y Fuentes) -->
+    <!-- MudBlazor CSS y Fuentes -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
     <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
-    <link href="_content/Z.Blazor.Diagrams/style.css" rel="stylesheet" />
+    
+    <!-- Google Identity Services (para Google Sign-In) -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 
 <body>
@@ -36,18 +38,20 @@
 
 <script src="_framework/blazor.webassembly.js"></script>
 
-<!-- 2. ESTO TAMBIÉN FALTABA (El cerebro de MudBlazor) -->
+<!-- MudBlazor JavaScript -->
 <script src="_content/MudBlazor/MudBlazor.min.js"></script>
-</body>
 
-<!-- SCRIPT DE MERMAID.JS -->
+<!-- Google Authentication Interop -->
+<script src="js/googleAuth.js"></script>
+
+<!-- Mermaid.js para diagramas -->
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 
 <script>
-    // Inicializamos Mermaid
+    // Inicializamos Mermaid para renderizar diagramas
     mermaid.initialize({ startOnLoad: true });
 
-    // Función que Blazor llamará para renderizar un mapa
+    // Función que Blazor llamará para renderizar un mapa conceptual/mental
     window.renderMermaid = (elementId, graphDefinition) => {
         const element = document.getElementById(elementId);
         if (element) {
@@ -61,7 +65,10 @@
         }
     };
     
+    // Configuración para Google Auth
+    window.googleAuth = window.googleAuth || {};
 </script>
+
 </body>
 
 </html>

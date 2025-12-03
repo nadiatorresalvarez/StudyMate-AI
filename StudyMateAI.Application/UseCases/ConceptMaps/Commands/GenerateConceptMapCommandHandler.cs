@@ -39,7 +39,6 @@ internal class GenerateConceptMapCommandHandler : IRequestHandler<GenerateConcep
 
         try
         {
-            // OJO: Aquí usamos la clase corregida que definimos abajo
             var data = JsonSerializer.Deserialize<GeminiGraphResponse>(fullJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             
             if (data != null)
@@ -48,8 +47,6 @@ internal class GenerateConceptMapCommandHandler : IRequestHandler<GenerateConcep
                 nodesStr = JsonSerializer.Serialize(data.nodes);
                 edgesStr = JsonSerializer.Serialize(data.edges);
                 
-                // CORRECCIÓN: Como ahora son List<object>, podemos usar .Count directamente
-                // Ya no necesitas convertirlos con 'as IList'
                 nodeCount = data.nodes?.Count ?? 0;
                 edgeCount = data.edges?.Count ?? 0;
             }
@@ -75,13 +72,15 @@ internal class GenerateConceptMapCommandHandler : IRequestHandler<GenerateConcep
         };
 
         var created = await _conceptMapRepository.AddAsync(conceptMap);
-        var cleanNodes = JsonSerializer.Deserialize<object>(created.NodesJson);
-        var cleanEdges = JsonSerializer.Deserialize<object>(created.EdgesJson);
+        
+        // ✅ SOLUCIÓN: Usar valores por defecto si la deserialización falla
+        var cleanNodes = JsonSerializer.Deserialize<object>(created.NodesJson) ?? new object();
+        var cleanEdges = JsonSerializer.Deserialize<object>(created.EdgesJson) ?? new object();
 
         return new GenerateConceptMapResponseDto
         {
             ConceptMapId = created.Id,
-            Title = created.Title,
+            Title = created.Title ?? string.Empty, // ✅ Protección adicional por si Title es null
             NodesJson = cleanNodes, 
             EdgesJson = cleanEdges
         };

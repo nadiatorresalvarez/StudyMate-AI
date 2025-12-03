@@ -1,7 +1,9 @@
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using StudyMateAI.Domain.Entities;
 using StudyMateAI.Domain.Interfaces;
+using StudyMateAI.Infrastructure.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -16,14 +18,24 @@ namespace StudyMateAI.Infrastructure.Adapters.Services
         private readonly IUserRepository _userRepository;
         private readonly IUnitOfWork _unitOfWork; 
         private readonly IConfiguration _configuration;
-        private readonly dbContextStudyMateAI _dbContext; // para logs temporales
+        private readonly GoogleAuthOptions _googleAuthOptions;
+        private readonly dbContextStudyMateAI _dbContext;
 
-        public AuthService(IUserRepository userRepository, IUnitOfWork unitOfWork, IConfiguration configuration, dbContextStudyMateAI dbContext)
+        public AuthService(
+            IUserRepository userRepository, 
+            IUnitOfWork unitOfWork, 
+            IConfiguration configuration,
+            IOptions<GoogleAuthOptions> googleAuthOptions,
+            dbContextStudyMateAI dbContext)
         {
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
             _configuration = configuration;
+            _googleAuthOptions = googleAuthOptions.Value;
             _dbContext = dbContext;
+            
+            // Validar que GoogleAuth esté configurado
+            _googleAuthOptions.Validate();
         }
 
         public async Task<(User User, string JwtToken)> AuthenticateWithGoogleAsync(string idToken)
@@ -31,9 +43,10 @@ namespace StudyMateAI.Infrastructure.Adapters.Services
             // LOG TEMPORAL: confirmar cadena de conexión efectiva
             try { System.Console.WriteLine("DB context type: " + _dbContext.GetType().Name); } catch {}
 
+            // Usar GoogleAuthOptions inyectado (desacoplado de IConfiguration)
             var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, new GoogleJsonWebSignature.ValidationSettings
             {
-                Audience = new[] { _configuration["GoogleAuth:ClientId"] }
+                Audience = new[] { _googleAuthOptions.ClientId }
             });
 
             var user = await _userRepository.GetByGoogleIdAsync(payload.Subject);

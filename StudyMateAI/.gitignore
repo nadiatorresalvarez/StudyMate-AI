@@ -1,14 +1,261 @@
+## Ignorar archivos de construcción y temporales de .NET
+*.swp
+*.*~
+project.lock.json
+.DS_Store
+*.pyc
+nupkg/
 
-# Environment-specific settings (keep actual values out of git)
+# Visual Studio / Rider / VS Code
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+.ionide/
+
+# Rider - Ignorar TODOS los archivos de configuración de Rider
+**/.idea/
+**/.idea/**/*
+*.sln.iml
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# NuGet Packages
+*.nupkg
+*.snupkg
+**/packages/*
+!**/packages/build/
+*.nuget.props
+*.nuget.targets
+
+# Visual Studio cache/options directory
+.vs/
+
+# Visual Studio profiler
+*.psess
+*.vsp
+*.vspx
+*.sap
+
+# ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# Archivos de usuario de ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# MSTest test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# NUnit
+*.VisualState.xml
+TestResult.xml
+nunit-*.xml
+
+# Entity Framework Migrations
+**/Migrations/*.cs
+!**/Migrations/Configuration.cs
+
+# ===================================
+# ARCHIVOS SENSIBLES - NO SUBIR NUNCA
+# ===================================
+
+# Archivos de configuración con datos sensibles
+appsettings.json
 appsettings.Development.json
 appsettings.Production.json
+appsettings.Staging.json
+appsettings.*.json
+!appsettings.Example.json
 
-# Dependencies and build
-bin/
-obj/
-.vs/
+# Variables de entorno
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+*.env
+
+# Archivos de secretos de usuario
+secrets.json
+**/secrets.json
+
+# Claves privadas y certificados
+*.pfx
+*.p12
+*.key
+*.pem
+*.crt
+*.cer
+*.der
+*.csr
+
+# Archivos de base de datos locales
+*.db
+*.sqlite
+*.sqlite3
+*.mdf
+*.ldf
+
+# Logs y archivos temporales
+*.log
+logs/
+log/
+*.tmp
+*.temp
+
+# Archivos de Azure
+local.settings.json
+.azure/
+
+# AWS
+.aws/
+*.pem
+
+# Google Cloud
+gcloud-key.json
+service-account.json
+
+# Conexiones a BD y strings sensibles
+ConnectionStrings.json
+database.json
+
+# Archivos de backup
+*.bak
+*.backup
+
+# Windows thumbnail cache
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin
+$RECYCLE.BIN/
+
+# Node modules (si usas frontend)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Mac
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux
+*~
+.directory
+
+# Archivos de publicación
+*.Publish.xml
+*.pubxml
+*.publishproj
+
+# Microsoft Azure Web App publish settings
+PublishScripts/
+
+# NuGet Symbol Packages
+*.snupkg
+
+# Package Files
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Archivos de caché de Rider (duplicado para asegurar)
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
+
+# AWS SAM
+.aws-sam/
+
+# Terraform
+*.tfstate
+*.tfstate.backup
+.terraform/
+
+# Docker
+docker-compose.override.yml
+
+# JetBrains Rider
 .idea/
 
-# IDE
+# Archivos de compilación de .NET
+**/bin/
+**/obj/
+
+# Archivos temporales
+*.nuget.info
+*.cache
+*.pdb
+*.dll
+*.exe
+# Dependencias de .NET y Visual Studio/Rider
+[Oo]bj/
+[Bb]in/
+.idea/
+*.suo
+*.user
+*.sln.docstates
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+# Archivos de configuración local
 *.user
 *.suo
+*.cache
+*.log
+
+# Archivos de Rider / IntelliJ
+.idea/
+*.iml
+
+# Archivos de Visual Studio
+*.vs/
+*.vscode/
+*.csproj.FileListAbsolute.txt
+*.csproj.nuget.g.props
+*.csproj.nuget.g.targets
+
+# Carpetas de compilación
+bin/
+obj/
+
+# Archivos de entorno
+.env

@@ -27,7 +27,7 @@ public class QuizService
             var generatedQuiz = await response.Content.ReadFromJsonAsync<GenerateQuizResponseDto>();
     
             // Ahora podemos acceder a la propiedad de forma segura y fuertemente tipada
-            int quizId = generatedQuiz.QuizId;
+            int quizId = generatedQuiz?.QuizId ?? throw new Exception("No se pudo obtener el ID del quiz generado");
 
             // El resto del código sigue igual
             return await GetQuizForAttempt(quizId);
@@ -53,7 +53,7 @@ public class QuizService
             
             // CORRECCIÓN: Usamos el DTO en lugar de dynamic
             var attemptResponse = await submitResponse.Content.ReadFromJsonAsync<SubmitAttemptResponseDto>();
-            int attemptId = attemptResponse.AttemptId;
+            int attemptId = attemptResponse?.AttemptId ?? throw new Exception("No se pudo obtener el ID del intento");
 
             // PASO 2: Evaluar el intento (sin cambios)
             var evaluateResponse = await _http.PostAsync($"api/Quiz/attempts/{attemptId}/evaluate", null);

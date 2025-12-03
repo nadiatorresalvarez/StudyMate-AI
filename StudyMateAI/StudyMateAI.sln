@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudyMateAI", "StudyMateAI\StudyMateAI.csproj", "{46E940FC-A488-4B6F-AC1E-F9BEBD3A91D0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudyMateAI.Application", "StudyMateAI.Application\StudyMateAI.Application.csproj", "{D12F0207-9B30-48AC-A3AF-966FB1D9EF3E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudyMateAI.Domain", "StudyMateAI.Domain\StudyMateAI.Domain.csproj", "{848F530D-C8AF-4B70-AEC3-B532E888E8C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudyMateAI.Infrastructure", "StudyMateAI.Infrastructure\StudyMateAI.Infrastructure.csproj", "{2B26C6A9-BE5C-49E8-B26B-DCFFC559F012}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudyMateAI.Client", "StudyMateAI.Client\StudyMateAI.Client.csproj", "{B282832A-9445-4DCF-9363-008D2E4F2766}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{46E940FC-A488-4B6F-AC1E-F9BEBD3A91D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46E940FC-A488-4B6F-AC1E-F9BEBD3A91D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46E940FC-A488-4B6F-AC1E-F9BEBD3A91D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46E940FC-A488-4B6F-AC1E-F9BEBD3A91D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D12F0207-9B30-48AC-A3AF-966FB1D9EF3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D12F0207-9B30-48AC-A3AF-966FB1D9EF3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D12F0207-9B30-48AC-A3AF-966FB1D9EF3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D12F0207-9B30-48AC-A3AF-966FB1D9EF3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{848F530D-C8AF-4B70-AEC3-B532E888E8C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{848F530D-C8AF-4B70-AEC3-B532E888E8C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{848F530D-C8AF-4B70-AEC3-B532E888E8C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{848F530D-C8AF-4B70-AEC3-B532E888E8C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B26C6A9-BE5C-49E8-B26B-DCFFC559F012}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B26C6A9-BE5C-49E8-B26B-DCFFC559F012}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B26C6A9-BE5C-49E8-B26B-DCFFC559F012}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B26C6A9-BE5C-49E8-B26B-DCFFC559F012}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B282832A-9445-4DCF-9363-008D2E4F2766}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B282832A-9445-4DCF-9363-008D2E4F2766}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B282832A-9445-4DCF-9363-008D2E4F2766}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B282832A-9445-4DCF-9363-008D2E4F2766}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

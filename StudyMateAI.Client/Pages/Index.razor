@@ -1,0 +1,130 @@
+@page "/"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using StudyMateAI.Client.Services.Interfaces
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IAuthService AuthService
+@inject NavigationManager NavManager
+
+@attribute [Authorize]
+
+<PageTitle>Dashboard - StudyMate AI</PageTitle>
+
+@if (_isLoading)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+    <MudContainer Class="mt-4">
+        <MudText Align="Align.Center">Cargando dashboard...</MudText>
+    </MudContainer>
+}
+else if (_isAuthenticated)
+{
+    <MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+        <div class="d-flex align-center mb-4">
+            <MudIcon Icon="@Icons.Material.Filled.Dashboard" Color="Color.Primary" Size="Size.Large" Class="mr-2" />
+            <MudText Typo="Typo.h4">Bienvenido a StudyMate AI</MudText>
+        </div>
+
+        <MudGrid>
+            <MudItem xs="12" sm="6" md="3">
+                <MudCard Class="h-100">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Documentos</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudText Typo="Typo.h4">0</MudText>
+                        <MudText Typo="Typo.caption">Archivos subidos</MudText>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" Href="documentos">Ver Documentos</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+
+            <MudItem xs="12" sm="6" md="3">
+                <MudCard Class="h-100">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Materias</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudText Typo="Typo.h4">0</MudText>
+                        <MudText Typo="Typo.caption">Áreas de estudio</MudText>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" Href="materias">Ver Materias</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+
+            <MudItem xs="12" sm="6" md="3">
+                <MudCard Class="h-100">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Cuestionarios</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudText Typo="Typo.h4">0</MudText>
+                        <MudText Typo="Typo.caption">Tests completados</MudText>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" Href="quiz">Ver Cuestionarios</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+
+            <MudItem xs="12" sm="6" md="3">
+                <MudCard Class="h-100">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Perfil</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudText Typo="Typo.caption">Ajustes y cuenta</MudText>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" Href="perfil">Mi Perfil</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+}
+else
+{
+    <!-- No debería llegar aquí porque [Authorize] redirige -->
+    <MudContainer Class="mt-4">
+        <MudAlert Severity="Severity.Warning">
+            Debes estar autenticado para acceder.
+            <MudButton Variant="Variant.Text" Color="Color.Inherit" Href="/login" Class="ml-2">Ir a Login</MudButton>
+        </MudAlert>
+    </MudContainer>
+}
+
+@code {
+    private bool _isLoading = true;
+    private bool _isAuthenticated = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            _isAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error checking auth state: {ex.Message}");
+            _isAuthenticated = false;
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+}
