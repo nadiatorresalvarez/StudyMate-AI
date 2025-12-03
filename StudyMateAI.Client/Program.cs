@@ -36,6 +36,9 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 // Servicios de Dominio (con interfaces)
 builder.Services.AddScoped<ISubjectService, SubjectService>();
 builder.Services.AddScoped<IDocumentService, DocumentService>();
+builder.Services.AddScoped<IFlashcardService, FlashcardService>();
+builder.Services.AddScoped<ISummaryService, SummaryService>();
+builder.Services.AddScoped<IQuizDownloadService, QuizDownloadService>();
 
 // Otros servicios (mantener para compatibilidad con componentes existentes)
 builder.Services.AddScoped<StudyService>();

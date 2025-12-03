@@ -1,5 +1,10 @@
 @using StudyMateAI.Client.DTOs.Quiz
+@using StudyMateAI.Client.Services.Interfaces
 @using Size = MudBlazor.Size
+@using Microsoft.JSInterop
+@inject IQuizDownloadService QuizDownloadService
+@inject ISnackbar Snackbar
+@inject IJSRuntime JSRuntime
 
 
 <MudDialog>
@@ -65,6 +70,21 @@
         </MudExpansionPanels>
     </DialogContent>
     <DialogActions>
+        <MudButton OnClick="DownloadQuizPdf" 
+                   Color="Color.Info" 
+                   Variant="Variant.Outlined"
+                   StartIcon="@Icons.Material.Filled.Download"
+                   Disabled="_downloadingPdf">
+            @if (_downloadingPdf)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                <span>Descargando...</span>
+            }
+            else
+            {
+                <span>📥 Descargar PDF</span>
+            }
+        </MudButton>
         <MudButton OnClick="Close" Color="Color.Primary" Variant="Variant.Filled">Cerrar</MudButton>
     </DialogActions>
 </MudDialog>
@@ -72,6 +92,47 @@
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
     [Parameter] public QuizAttemptResultDto Result { get; set; } = new();
+    [Parameter] public int? QuizId { get; set; }
+
+    private bool _downloadingPdf = false;
 
     void Close() => MudDialog.Close(DialogResult.Ok(true));
+
+    private async Task DownloadQuizPdf()
+    {
+        _downloadingPdf = true;
+        try
+        {
+            if (!QuizId.HasValue || QuizId <= 0)
+            {
+                Snackbar.Add("No se pudo identificar el cuestionario para descargar", Severity.Warning);
+                return;
+            }
+
+            var fileBytes = await QuizDownloadService.DownloadQuizPdfAsync(QuizId.Value);
+            
+            if (fileBytes != null && fileBytes.Length > 0)
+            {
+                // Crear nombre de archivo
+                var fileName = $"Cuestionario-{Result.QuizTitle.Replace(" ", "_")}.pdf";
+
+                // Llamar a la función JavaScript para descargar
+                await JSRuntime.InvokeVoidAsync("downloadPdfFile", fileName, fileBytes);
+                Snackbar.Add("Cuestionario descargado correctamente", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add("Error: No se pudo obtener el archivo PDF", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error descargando PDF: {ex.Message}", Severity.Error);
+            System.Diagnostics.Debug.WriteLine($"Error en DownloadQuizPdf: {ex}");
+        }
+        finally
+        {
+            _downloadingPdf = false;
+        }
+    }
 }

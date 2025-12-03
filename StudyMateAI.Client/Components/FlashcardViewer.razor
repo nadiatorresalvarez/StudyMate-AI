@@ -1,0 +1,249 @@
+@using StudyMateAI.Client.Services.Interfaces
+@using StudyMateAI.Client.DTOs.Flashcards
+@using Color = MudBlazor.Color
+@using Size = MudBlazor.Size
+@using Variant = MudBlazor.Variant
+
+@namespace StudyMateAI.Client.Components
+
+@inject IFlashcardService FlashcardService
+@inject ISnackbar Snackbar
+
+<div class="flashcard-container">
+    <!-- Indicador de Progreso -->
+    <div class="progress-indicator mb-4">
+        <MudText Typo="Typo.h6" Align="Align.Center">
+            Tarjeta @(CurrentCardIndex + 1) de @Flashcards.Count
+        </MudText>
+        <MudProgressLinear Value="@ProgressPercentage" Color="Color.Primary" Class="mt-2" />
+    </div>
+
+    @if (Flashcards.Count == 0)
+    {
+        <MudAlert Severity="Severity.Info" Class="mt-4">
+            No hay flashcards disponibles. Por favor, genera algunas primero.
+        </MudAlert>
+    }
+    else
+    {
+        <!-- Tarjeta Interactiva (Flip) -->
+        <div class="flashcard-wrapper mt-6 mb-6">
+            <div class="flashcard @(IsFlipped ? "flipped" : "")" @onclick="ToggleFlip">
+                <div class="flashcard-inner">
+                    <!-- Frente de la tarjeta (Pregunta) -->
+                    <div class="flashcard-front">
+                        <MudCard Elevation="4" Class="h-100 d-flex align-center justify-center">
+                            <MudCardContent Class="text-center">
+                                <MudText Typo="Typo.subtitle2" Color="Color.Secondary" Class="mb-4">
+                                    Pregunta
+                                </MudText>
+                                <MudText Typo="Typo.h5" Style="font-weight: 600; line-height: 1.6;">
+                                    @CurrentFlashcard.Question
+                                </MudText>
+                                <MudText Typo="Typo.caption" Color="Color.Tertiary" Class="mt-6">
+                                    Haz clic para ver la respuesta
+                                </MudText>
+                            </MudCardContent>
+                        </MudCard>
+                    </div>
+
+                    <!-- Reverso de la tarjeta (Respuesta) -->
+                    <div class="flashcard-back">
+                        <MudCard Elevation="4" Class="h-100 d-flex align-center justify-center">
+                            <MudCardContent Class="text-center">
+                                <MudText Typo="Typo.subtitle2" Color="Color.Success" Class="mb-4">
+                                    Respuesta
+                                </MudText>
+                                <MudText Typo="Typo.h5" Style="font-weight: 600; line-height: 1.6;">
+                                    @CurrentFlashcard.Answer
+                                </MudText>
+                                <MudText Typo="Typo.caption" Color="Color.Tertiary" Class="mt-6">
+                                    Haz clic para ver la pregunta
+                                </MudText>
+                            </MudCardContent>
+                        </MudCard>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de Navegación -->
+        <div class="navigation-buttons d-flex justify-center gap-2 mb-6">
+            <MudButton Variant="Variant.Outlined" Color="Color.Default" 
+                       OnClick="PreviousCard" 
+                       Disabled="CurrentCardIndex == 0 || IsEvaluating"
+                       StartIcon="@Icons.Material.Filled.NavigateBefore">
+                Anterior
+            </MudButton>
+            
+            <MudChip T="string" Color="Color.Primary" Size="Size.Medium" Class="mx-4">
+                @(CurrentCardIndex + 1)/@Flashcards.Count
+            </MudChip>
+
+            <MudButton Variant="Variant.Outlined" Color="Color.Default"
+                       OnClick="NextCard"
+                       Disabled="CurrentCardIndex == Flashcards.Count - 1 || IsEvaluating"
+                       EndIcon="@Icons.Material.Filled.NavigateNext">
+                Siguiente
+            </MudButton>
+        </div>
+
+        <!-- Botones de Evaluación (Solo si se ve la respuesta) -->
+        @if (IsFlipped)
+        {
+            <div class="evaluation-buttons">
+                <MudText Typo="Typo.subtitle1" Align="Align.Center" Class="mb-4">
+                    ¿Qué tan bien lo recordaste?
+                </MudText>
+                
+                <div class="d-flex justify-center gap-2 flex-wrap">
+                    <MudButton Variant="Variant.Filled" Color="Color.Error"
+                               OnClick="@(() => EvaluateFlashcard(0))"
+                               Disabled="IsEvaluating"
+                               Class="evaluation-btn">
+                        <MudIcon Icon="@Icons.Material.Filled.SentimentVeryDissatisfied" Class="mr-2" />
+                        No lo sabía
+                    </MudButton>
+
+                    <MudButton Variant="Variant.Filled" Color="Color.Warning"
+                               OnClick="@(() => EvaluateFlashcard(2))"
+                               Disabled="IsEvaluating"
+                               Class="evaluation-btn">
+                        <MudIcon Icon="@Icons.Material.Filled.SentimentDissatisfied" Class="mr-2" />
+                        Difícil
+                    </MudButton>
+
+                    <MudButton Variant="Variant.Filled" Color="Color.Info"
+                               OnClick="@(() => EvaluateFlashcard(3))"
+                               Disabled="IsEvaluating"
+                               Class="evaluation-btn">
+                        <MudIcon Icon="@Icons.Material.Filled.SentimentSatisfied" Class="mr-2" />
+                        Bien
+                    </MudButton>
+
+                    <MudButton Variant="Variant.Filled" Color="Color.Success"
+                               OnClick="@(() => EvaluateFlashcard(4))"
+                               Disabled="IsEvaluating"
+                               Class="evaluation-btn">
+                        <MudIcon Icon="@Icons.Material.Filled.SentimentVerySatisfied" Class="mr-2" />
+                        Fácil
+                    </MudButton>
+
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                               OnClick="@(() => EvaluateFlashcard(5))"
+                               Disabled="IsEvaluating"
+                               Class="evaluation-btn">
+                        <MudIcon Icon="@Icons.Material.Filled.Favorite" Class="mr-2" />
+                        Muy Fácil
+                    </MudButton>
+                </div>
+            </div>
+        }
+
+        <!-- Indicador de Tarjetas Revisadas -->
+        <div class="reviewed-indicator mt-6">
+            <MudText Typo="Typo.body2" Align="Align.Center" Color="Color.Inherit">
+                @ReviewedCount tarjeta@(ReviewedCount != 1 ? "s" : "") revisada@(ReviewedCount != 1 ? "s" : "")
+            </MudText>
+            <MudProgressLinear Value="@ReviewedPercentage" Color="Color.Success" Class="mt-2" />
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public List<FlashcardResponseDto> Flashcards { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<(int CardId, int Quality)> OnFlashcardReviewed { get; set; }
+
+    private int CurrentCardIndex = 0;
+    private bool IsFlipped = false;
+    private bool IsEvaluating = false;
+    private HashSet<int> ReviewedCardIds = new();
+
+    private FlashcardResponseDto CurrentFlashcard =>
+        CurrentCardIndex >= 0 && CurrentCardIndex < Flashcards.Count
+            ? Flashcards[CurrentCardIndex]
+            : new FlashcardResponseDto();
+
+    private double ProgressPercentage =>
+        Flashcards.Count > 0 ? ((CurrentCardIndex + 1) / (double)Flashcards.Count) * 100 : 0;
+
+    private int ReviewedCount => ReviewedCardIds.Count;
+
+    private double ReviewedPercentage =>
+        Flashcards.Count > 0 ? (ReviewedCount / (double)Flashcards.Count) * 100 : 0;
+
+    protected override void OnParametersSet()
+    {
+        // Reiniciar cuando cambian las flashcards
+        if (Flashcards.Count > 0 && CurrentCardIndex >= Flashcards.Count)
+        {
+            CurrentCardIndex = 0;
+        }
+    }
+
+    private void ToggleFlip()
+    {
+        IsFlipped = !IsFlipped;
+    }
+
+    private void NextCard()
+    {
+        if (CurrentCardIndex < Flashcards.Count - 1)
+        {
+            CurrentCardIndex++;
+            IsFlipped = false;
+        }
+    }
+
+    private void PreviousCard()
+    {
+        if (CurrentCardIndex > 0)
+        {
+            CurrentCardIndex--;
+            IsFlipped = false;
+        }
+    }
+
+    private async Task EvaluateFlashcard(int quality)
+    {
+        IsEvaluating = true;
+        try
+        {
+            await FlashcardService.ReviewFlashcardAsync(CurrentFlashcard.Id, quality);
+            ReviewedCardIds.Add(CurrentFlashcard.Id);
+
+            // Notificar al componente padre
+            await OnFlashcardReviewed.InvokeAsync((CurrentFlashcard.Id, quality));
+
+            Snackbar.Add($"Tarjeta evaluada con calidad: {GetQualityLabel(quality)}", Severity.Success);
+
+            // Ir a la siguiente tarjeta si no es la última
+            if (CurrentCardIndex < Flashcards.Count - 1)
+            {
+                await Task.Delay(500);
+                NextCard();
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error al evaluar tarjeta: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            IsEvaluating = false;
+        }
+    }
+
+    private string GetQualityLabel(int quality) => quality switch
+    {
+        0 => "No lo sabía",
+        2 => "Difícil",
+        3 => "Bien",
+        4 => "Fácil",
+        5 => "Muy fácil",
+        _ => "Desconocido"
+    };
+}

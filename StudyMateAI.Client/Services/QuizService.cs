@@ -71,4 +71,35 @@ public class QuizService
             return await _http.GetFromJsonAsync<QuizAttemptResultDto>($"api/Quiz/attempts/{attemptId}")
                    ?? throw new Exception("Resultado no encontrado.");
         }
+
+        /// <summary>
+        /// Descarga un cuestionario en formato PDF
+        /// Endpoint: GET /api/quiz/{quizId}/download
+        /// </summary>
+        public async Task<byte[]?> DownloadQuizPdfAsync(int quizId)
+        {
+            try
+            {
+                var response = await _http.GetAsync($"api/quiz/{quizId}/download");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"Error al descargar cuestionario: {error}");
+                }
+
+                // Verificar que la respuesta tenga contenido
+                if (response.Content == null)
+                {
+                    throw new Exception("No se recibió contenido del archivo PDF");
+                }
+
+                return await response.Content.ReadAsByteArrayAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error en DownloadQuizPdfAsync: {ex.Message}");
+                throw;
+            }
+        }
     }

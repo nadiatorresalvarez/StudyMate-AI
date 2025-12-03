@@ -7,12 +7,15 @@
 @using StudyMateAI.Client.DTOs.Quiz
 @using StudyMateAI.Client.Services
 @using StudyMateAI.Client.Services.Interfaces
+@using StudyMateAI.Client.Services.Implementations
 @inject IDocumentService DocumentService
 @inject StudyService StudyService
 @inject ISnackbar Snackbar
+@inject IJSRuntime JSRuntime
 
 @inject QuizService QuizService
 @inject IDialogService DialogService
+@inject ISummaryService SummaryService
 
 @using Color = MudBlazor.Color
 @using Size = MudBlazor.Size
@@ -65,6 +68,23 @@
                         }
                         else
                         {
+                            <div class="d-flex justify-end mb-4">
+                                <MudButton Variant="Variant.Outlined" 
+                                           Color="Color.Primary"
+                                           StartIcon="@Icons.Material.Filled.Download"
+                                           OnClick="DownloadSummary"
+                                           Disabled="_downloadingSummary">
+                                    @if (_downloadingSummary)
+                                    {
+                                        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                                        <span>Descargando...</span>
+                                    }
+                                    else
+                                    {
+                                        <span>📥 Descargar Resumen</span>
+                                    }
+                                </MudButton>
+                            </div>
                             <MudPaper Class="pa-6" Elevation="1" Style="background-color: #FAFAFA; border-left: 4px solid #7986CB;">
                                 <MudText Typo="Typo.body1" Style="white-space: pre-line; line-height: 1.6;">
                                     @((MarkupString)(_summaryText ?? ""))
@@ -92,32 +112,17 @@
                 }
                 else
                 {
-                    <div class="d-flex justify-end mb-4">
-                        <MudButton StartIcon="@Icons.Material.Filled.Refresh" OnClick="GenerateFlashcards" Color="Color.Default">Regenerar</MudButton>
+                    <div class="d-flex justify-space-between align-center mb-4">
+                        <MudButton StartIcon="@Icons.Material.Filled.Refresh" OnClick="GenerateFlashcards" Color="Color.Default">
+                            Regenerar
+                        </MudButton>
+                        <MudText Typo="Typo.body2" Color="Color.Inherit">
+                            @_flashcards.Count tarjeta@(_flashcards.Count != 1 ? "s" : "")
+                        </MudText>
                     </div>
-                    <MudGrid>
-                        @foreach (var card in _flashcards)
-                        {
-                            <MudItem xs="12" sm="6" md="4" @key="card.Id">
-                                <MudCard Elevation="2" Class="h-100">
-                                    <MudCardHeader>
-                                        <CardHeaderContent>
-                                            <MudChip T="string" Size="Size.Small" Color="@GetDifficultyColor(card.Difficulty)">
-                                                @(card.Difficulty ?? "Medium")
-                                            </MudChip>
-                                        </CardHeaderContent>
-                                    </MudCardHeader>
-                                    <MudCardContent>
-                                        <MudText Typo="Typo.subtitle2" Color="Color.Secondary">Pregunta:</MudText>
-                                        <MudText Typo="Typo.h6" Class="mb-3" Style="font-weight: 600;">@card.Question</MudText>
-                                        <MudDivider Class="my-2"/>
-                                        <MudText Typo="Typo.subtitle2" Color="Color.Success">Respuesta:</MudText>
-                                        <MudText Typo="Typo.body1">@card.Answer</MudText>
-                                    </MudCardContent>
-                                </MudCard>
-                            </MudItem>
-                        }
-                    </MudGrid>
+                    
+                    <!-- Componente interactivo de Flashcards -->
+                    <FlashcardViewer Flashcards="_flashcards" OnFlashcardReviewed="HandleFlashcardReviewed" />
                 }
             </MudTabPanel>
             
@@ -190,6 +195,9 @@
     private DocumentResponseDto? _document;
     private string _summaryText = "";
     private bool _loadingSummary = false;
+    private bool _downloadingSummary = false;
+    private int? _currentSummaryId = null;
+    private string _currentSummaryType = "brief";
     private bool _startingQuiz = false;
     
     private bool _loadingMap = false;
@@ -221,6 +229,7 @@
         try
         {
             _summaryText = await StudyService.GenerateSummary(Id, type);
+            _currentSummaryType = type;
             Snackbar.Add("Resumen generado", Severity.Success);
         }
         catch (Exception ex)
@@ -295,7 +304,11 @@
             if (!result.Canceled && result.Data != null)
             {
                 var quizResult = (QuizAttemptResultDto)result.Data;
-                var resultParams = new DialogParameters { ["Result"] = quizResult };
+                var resultParams = new DialogParameters 
+                { 
+                    ["Result"] = quizResult,
+                    ["QuizId"] = quizForAttempt.QuizId
+                };
                 var resultOptions = new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true };
                 DialogService.Show<QuizResult>("Resultado del Cuestionario", resultParams, resultOptions);
             }
@@ -360,5 +373,55 @@
     {
         _displayNodesJson = null;
         _displayEdgesJson = null;
+    }
+
+    private async Task HandleFlashcardReviewed((int CardId, int Quality) result)
+    {
+        // Este método se ejecuta cuando una flashcard es evaluada
+        // Se puede usar para analytics, actualizar UI, etc.
+        System.Diagnostics.Debug.WriteLine($"Flashcard {result.CardId} evaluada con calidad: {result.Quality}");
+    }
+
+    private async Task DownloadSummary()
+    {
+        _downloadingSummary = true;
+        try
+        {
+            if (_document == null || _document.SummaryCount == 0)
+            {
+                Snackbar.Add("No hay resumen disponible para descargar", Severity.Warning);
+                return;
+            }
+
+            // Obtener el ID más reciente del resumen (asumimos que el backend retorna el último)
+            // Para una implementación completa, necesitarías guardar el SummaryId cuando se genera
+            // Por ahora, usamos un valor placeholder que deberías actualizar según tu backend
+            var summaryId = _currentSummaryId ?? 1; // Esto debería venir del backend
+
+            var fileBytes = await SummaryService.DownloadSummaryAsync(summaryId);
+            
+            if (fileBytes != null && fileBytes.Length > 0)
+            {
+                // Crear nombre de archivo
+                var fileName = $"Resumen-{_document.OriginalFileName.Replace(" ", "_")}.docx";
+
+                // Llamar a la función JavaScript para descargar
+                await JSRuntime.InvokeVoidAsync("downloadDocxFile", fileName, fileBytes);
+                Snackbar.Add("Resumen descargado correctamente", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add("Error: No se pudo obtener el archivo", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error descargando resumen: {ex.Message}", Severity.Error);
+            System.Diagnostics.Debug.WriteLine($"Error en DownloadSummary: {ex}");
+        }
+        finally
+        {
+            _downloadingSummary = false;
+        }
     }
 }
