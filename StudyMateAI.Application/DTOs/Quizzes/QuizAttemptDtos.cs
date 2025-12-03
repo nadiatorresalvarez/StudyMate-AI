@@ -21,6 +21,9 @@ public class QuestionResultDto
     public string? SelectedAnswerText { get; set; }
     public string? CorrectAnswer { get; set; }
     public bool IsCorrect { get; set; }
+    
+    // Esto enviará al Frontend todas las opciones para poder mostrarlas
+    public IReadOnlyList<string> Options { get; set; } = Array.Empty<string>();
 }
 
 public class QuizAttemptResultDto
