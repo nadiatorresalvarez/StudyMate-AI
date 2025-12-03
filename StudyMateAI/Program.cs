@@ -22,17 +22,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-// ✨ MEJORADO: CORS (importante para aplicaciones frontend)
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend", policy =>
-    {
-        policy.WithOrigins("http://localhost:3000", "http://localhost:5173") // React/Vue/Angular
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
-    });
-});
 
 // Servicios de Aplicación e Infraestructura
 builder.Services.AddApplicationServices();
@@ -62,7 +51,6 @@ builder.Services.AddCors(options =>
             policy.WithOrigins("http://localhost:5041")
                 .AllowAnyHeader()
                 .AllowAnyMethod();
-                .AllowCredentials();
         });
 });
 
@@ -264,7 +252,6 @@ app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowFrontend");
 app.UseCors("AllowBlazorClient"); 
 
 app.UseAuthentication(); // <-- PRIMERO (¿Quién eres?)
