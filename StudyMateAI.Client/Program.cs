@@ -1,4 +1,3 @@
-using Blazor.Diagrams.Core;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
@@ -32,7 +31,5 @@ builder.Services.AddScoped<StudyMateAI.Client.Services.DocumentService>();
 builder.Services.AddScoped<StudyService>();
 builder.Services.AddScoped<ProfileService>();
 builder.Services.AddScoped<QuizService>();
-
-builder.Services.AddScoped<Diagram>();
 
 await builder.Build().RunAsync();
