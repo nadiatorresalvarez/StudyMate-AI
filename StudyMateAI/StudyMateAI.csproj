@@ -20,6 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\StudyMateAI.Application\StudyMateAI.Application.csproj" />
       <ProjectReference Include="..\StudyMateAI.Infrastructure\StudyMateAI.Infrastructure.csproj" />
     </ItemGroup>
 

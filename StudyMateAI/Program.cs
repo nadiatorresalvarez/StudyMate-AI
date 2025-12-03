@@ -22,7 +22,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
+<<<<<<< Updated upstream
 
+=======
+// ✨ MEJORADO: CORS (importante para aplicaciones frontend)
+>>>>>>> Stashed changes
 // Servicios de Aplicación e Infraestructura
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
@@ -50,12 +54,16 @@ builder.Services.AddCors(options =>
             // Por seguridad, en producción no uses AllowAnyOrigin.
             policy.WithOrigins("http://localhost:5041")
                 .AllowAnyHeader()
+<<<<<<< Updated upstream
                 .AllowAnyMethod();
+=======
+                .AllowAnyMethod()
+                .AllowCredentials();
+>>>>>>> Stashed changes
         });
 });
 
-// FluentValidation: registro de validación automática y escaneo de validadores
-builder.Services.AddFluentValidationAutoValidation();
+// FluentValidation: escaneo de validadores
 
 builder.Services.AddValidatorsFromAssemblyContaining<CreateSubjectDtoValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<UpdateUserProfileRequestValidator>();
