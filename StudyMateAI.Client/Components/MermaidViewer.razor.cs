@@ -1,9 +1,6 @@
 using Microsoft.AspNetCore.Components;
-using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using StudyMateAI.Client.DTOs.Diagrams;
 using Microsoft.JSInterop;
 
@@ -21,51 +18,49 @@ namespace StudyMateAI.Client.Components
         public string? EdgesJson { get; set; }
 
         private string _elementId = $"mermaid-{Guid.NewGuid()}";
-        
-        // Variable para guardar el código generado
-        private string _mermaidCode = string.Empty;
 
-        // OnParametersSetAsync es ideal para PROCESAR datos
-        protected override Task OnParametersSetAsync()
-        {
-            GenerateMermaidCode();
-            return base.OnParametersSetAsync();
-        }
-
-        // OnAfterRenderAsync es ideal para INTERACTUAR con JS
+        // Usamos OnAfterRenderAsync para asegurar que el div exista antes de llamar a JS
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            // Solo llamamos a JS si tenemos código que renderizar
-            if (!string.IsNullOrEmpty(_mermaidCode))
+            // Solo queremos renderizar si es la primera vez que se muestra
+            // o si los datos han cambiado (lo que fuerza una nueva renderización)
+            if (firstRender) 
             {
-                await JSRuntime.InvokeVoidAsync("renderMermaid", _elementId, _mermaidCode);
+                 await RenderMap();
             }
         }
-
-        private void GenerateMermaidCode()
+        
+        // Hacemos este método público para poder volver a llamarlo si es necesario
+        public async Task RenderMap()
         {
+            string mermaidCode;
+
             if (!string.IsNullOrWhiteSpace(EdgesJson))
             {
-                _mermaidCode = GenerateConceptMapCode();
+                mermaidCode = GenerateConceptMapCode();
             }
             else if (!string.IsNullOrWhiteSpace(NodesJson))
             {
-                _mermaidCode = GenerateMindMapCode();
+                mermaidCode = GenerateMindMapCode();
             }
             else
             {
-                _mermaidCode = string.Empty;
+                return; // No renderizamos nada si no hay datos
             }
+            
+            // Pequeña espera para asegurar que el DOM esté listo
+            await Task.Delay(50);
+            await JSRuntime.InvokeVoidAsync("renderMermaid", _elementId, mermaidCode);
         }
 
         private string GenerateConceptMapCode()
         {
             try
             {
+                var sb = new StringBuilder("graph LR;"); // Left-to-Right
                 var nodes = JsonSerializer.Deserialize<List<DiagramNode>>(NodesJson!);
                 var edges = JsonSerializer.Deserialize<List<DiagramEdge>>(EdgesJson!);
                 if (nodes == null) return string.Empty;
-                var sb = new StringBuilder("graph TD;");
                 foreach (var node in nodes) sb.AppendLine($"    {node.Id}[\"{node.Label.Replace("\"", "'")}\"];");
                 if (edges != null)
                 {
@@ -77,16 +72,16 @@ namespace StudyMateAI.Client.Components
                 }
                 return sb.ToString();
             }
-            catch (Exception ex) { return $"graph TD;\n  Error[\"Error: {ex.Message.Replace("\"", "'")}\"]"; }
+            catch (Exception ex) { return $"graph TD; Error[\"Error: {ex.Message}\"];"; }
         }
 
         private string GenerateMindMapCode()
         {
             try
             {
+                var sb = new StringBuilder("graph LR;"); // Left-to-Right
                 var rootNode = JsonSerializer.Deserialize<MindMapNode>(NodesJson!);
                 if (rootNode == null) return string.Empty;
-                var sb = new StringBuilder("graph TD;");
                 void Traverse(MindMapNode parent, string parentId)
                 {
                     if (parent.Children == null) return;
@@ -103,7 +98,7 @@ namespace StudyMateAI.Client.Components
                 Traverse(rootNode, rootId);
                 return sb.ToString();
             }
-            catch (Exception ex) { return $"graph TD;\n  Error[\"Error: {ex.Message.Replace("\"", "'")}\"]"; }
+            catch (Exception ex) { return $"graph TD; Error[\"Error: {ex.Message}\"];"; }
         }
     }
 }
