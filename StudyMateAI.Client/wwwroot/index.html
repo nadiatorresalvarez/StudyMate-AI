@@ -40,4 +40,24 @@
 <script src="_content/MudBlazor/MudBlazor.min.js"></script>
 </body>
 
+<!-- SCRIPT DE MERMAID.JS -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+    // Inicializamos Mermaid
+    mermaid.initialize({ startOnLoad: true });
+
+    // Función que Blazor llamará para renderizar un mapa
+    window.renderMermaid = (elementId, graphDefinition) => {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.removeAttribute('data-processed'); // Forzamos el redibujado
+            element.innerHTML = graphDefinition;
+            mermaid.run({
+                nodes: [element]
+            });
+        }
+    };
+</script>
+</body>
+
 </html>

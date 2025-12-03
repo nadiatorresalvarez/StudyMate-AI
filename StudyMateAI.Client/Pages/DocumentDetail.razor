@@ -1,5 +1,6 @@
 @page "/documentos/{Id:int}"
 @using StudyMateAI.Client.Components
+@using StudyMateAI.Client.DTOs.Diagrams
 @using StudyMateAI.Client.DTOs.Document
 @using StudyMateAI.Client.DTOs.Flashcards
 @using StudyMateAI.Client.DTOs.Quiz
@@ -154,7 +155,7 @@
                         <MudText Class="mt-2">La IA está dibujando las conexiones...</MudText>
                     </div>
                 }
-                else if (string.IsNullOrWhiteSpace(_nodesJson))
+                else if (_nodes == null || _nodes.Count == 0)
                 {
                     <!-- Si no hay mapa, mostramos los botones para generar -->
                     <div class="d-flex flex-column align-center justify-center text-center pa-10">
@@ -167,10 +168,7 @@
                                        OnClick="GenerateConceptMap">
                                 Generar Mapa Conceptual
                             </MudButton>
-                            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" Size="Size.Large"
-                                       OnClick="GenerateMindMap" Disabled="true">
-                                Generar Mapa Mental (Pronto)
-                            </MudButton>
+                            
                         </div>
                     </div>
                 }
@@ -180,7 +178,7 @@
                     <div class="d-flex justify-end mb-2">
                         <MudButton OnClick="ClearMap" StartIcon="@Icons.Material.Filled.Clear">Limpiar y Regenerar</MudButton>
                     </div>
-                    <DiagramViewer NodesJson="@_nodesJson" EdgesJson="@_edgesJson" />
+                    <MermaidViewer Nodes="@_nodes" Edges="@_edges" />
                 }
             </MudTabPanel>
 
@@ -197,8 +195,8 @@
     private bool _startingQuiz = false;
     
     private bool _loadingMap = false;
-    private string? _nodesJson;
-    private string? _edgesJson;
+    private List<DiagramNode>? _nodes;
+    private List<DiagramEdge>? _edges;
     
     // Inicializamos la lista para que no sea null nunca
     private List<FlashcardResponseDto> _flashcards = new(); 
@@ -318,14 +316,14 @@
     private async Task GenerateConceptMap()
     {
         _loadingMap = true;
-        _nodesJson = null;
-        _edgesJson = null;
+        _nodes = null;
+        _edges = null;
         try
         {
-            // Llama al servicio para obtener los datos del mapa conceptual
             var result = await StudyService.GenerateConceptMap(Id);
-            _nodesJson = result.NodesJson;
-            _edgesJson = result.EdgesJson;
+            // Asignamos las listas directamente
+            _nodes = result.Nodes;
+            _edges = result.Edges;
             Snackbar.Add("Mapa Conceptual generado", Severity.Success);
         }
         catch (Exception ex)
@@ -337,6 +335,12 @@
             _loadingMap = false;
         }
     }
+    private void ClearMap()
+    {
+        _nodes = null;
+        _edges = null;
+    }
+}
 
     // Este método lo dejaremos listo para el futuro
     private async Task GenerateMindMap()
@@ -360,7 +364,7 @@
         }
     }
     
-    // Método para limpiar el mapa y mostrar de nuevo los botones de generar
+     Método para limpiar el mapa y mostrar de nuevo los botones de generar
     private void ClearMap()
     {
         _nodesJson = null;

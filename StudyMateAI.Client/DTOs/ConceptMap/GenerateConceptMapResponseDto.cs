@@ -1,8 +1,16 @@
-namespace StudyMateAI.Client.DTOs.ConceptMap;
+using System.Text.Json.Serialization;
+using StudyMateAI.Client.DTOs.Diagrams;
 
-public class GenerateConceptMapResponseDto
+namespace StudyMateAI.Client.DTOs.ConceptMap
 {
-    public int ConceptMapId { get; set; }
-    public string NodesJson { get; set; } = string.Empty;
-    public string EdgesJson { get; set; } = string.Empty;
+    public class GenerateConceptMapResponseDto
+    {
+        public int ConceptMapId { get; set; }
+        
+        [JsonPropertyName("nodesJson")]
+        public List<DiagramNode> Nodes { get; set; } = new(); 
+        
+        [JsonPropertyName("edgesJson")]
+        public List<DiagramEdge> Edges { get; set; } = new();
+    }
 }
