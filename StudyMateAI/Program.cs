@@ -22,11 +22,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-<<<<<<< Updated upstream
-
-=======
-// ✨ MEJORADO: CORS (importante para aplicaciones frontend)
->>>>>>> Stashed changes
 // Servicios de Aplicación e Infraestructura
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
@@ -54,229 +49,227 @@ builder.Services.AddCors(options =>
             // Por seguridad, en producción no uses AllowAnyOrigin.
             policy.WithOrigins("http://localhost:5041")
                 .AllowAnyHeader()
-<<<<<<< Updated upstream
-                .AllowAnyMethod();
-=======
                 .AllowAnyMethod()
                 .AllowCredentials();
->>>>>>> Stashed changes
+
         });
-});
 
 // FluentValidation: escaneo de validadores
 
-builder.Services.AddValidatorsFromAssemblyContaining<CreateSubjectDtoValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<UpdateUserProfileRequestValidator>();
+    builder.Services.AddValidatorsFromAssemblyContaining<CreateSubjectDtoValidator>();
+    builder.Services.AddValidatorsFromAssemblyContaining<UpdateUserProfileRequestValidator>();
 
 // ✨ MEJORADO: ReportGenerator con validación de ruta y logging
-builder.Services.AddScoped<IReportGenerator>(provider => 
-{
-    var config = provider.GetRequiredService<IConfiguration>();
-    var env = provider.GetRequiredService<IWebHostEnvironment>();
-    var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
-    var logger = loggerFactory.CreateLogger<Program>();
-    var reportLogger = loggerFactory.CreateLogger("StudyMateAI.Infrastructure.Adapters.Reports.ReportGenerator");
-    
-    // Obtener ruta desde configuración o usar default
-    var logoPath = config["ReportSettings:LogoPath"] ?? "images/logo-studymate.png";
-    
-    // Convertir a ruta absoluta dentro de wwwroot
-    var fullLogoPath = Path.Combine(env.WebRootPath, logoPath);
-    
-    logger.LogInformation("🔍 Verificando logo:");
-    logger.LogInformation("   - WebRootPath: {WebRoot}", env.WebRootPath);
-    logger.LogInformation("   - Ruta configurada: {ConfigPath}", logoPath);
-    logger.LogInformation("   - Ruta completa: {FullPath}", fullLogoPath);
-    logger.LogInformation("   - Directorio actual: {CurrentDir}", Directory.GetCurrentDirectory());
-    
-    // Validar que el archivo exista
-    if (!File.Exists(fullLogoPath))
+    builder.Services.AddScoped<IReportGenerator>(provider =>
     {
-        logger.LogWarning("⚠️ Logo NO encontrado en: {LogoPath}", fullLogoPath);
-        logger.LogWarning("   Los documentos se generarán sin marca de agua.");
-        
-        // Listar archivos en wwwroot/images para diagnóstico
-        var imagesDir = Path.Combine(env.WebRootPath, "images");
-        if (Directory.Exists(imagesDir))
+        var config = provider.GetRequiredService<IConfiguration>();
+        var env = provider.GetRequiredService<IWebHostEnvironment>();
+        var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+        var logger = loggerFactory.CreateLogger<Program>();
+        var reportLogger = loggerFactory.CreateLogger("StudyMateAI.Infrastructure.Adapters.Reports.ReportGenerator");
+
+        // Obtener ruta desde configuración o usar default
+        var logoPath = config["ReportSettings:LogoPath"] ?? "images/logo-studymate.png";
+
+        // Convertir a ruta absoluta dentro de wwwroot
+        var fullLogoPath = Path.Combine(env.WebRootPath, logoPath);
+
+        logger.LogInformation("🔍 Verificando logo:");
+        logger.LogInformation("   - WebRootPath: {WebRoot}", env.WebRootPath);
+        logger.LogInformation("   - Ruta configurada: {ConfigPath}", logoPath);
+        logger.LogInformation("   - Ruta completa: {FullPath}", fullLogoPath);
+        logger.LogInformation("   - Directorio actual: {CurrentDir}", Directory.GetCurrentDirectory());
+
+        // Validar que el archivo exista
+        if (!File.Exists(fullLogoPath))
         {
-            var files = Directory.GetFiles(imagesDir);
-            logger.LogInformation("   Archivos en {ImagesDir}:", imagesDir);
-            foreach (var file in files)
+            logger.LogWarning("⚠️ Logo NO encontrado en: {LogoPath}", fullLogoPath);
+            logger.LogWarning("   Los documentos se generarán sin marca de agua.");
+
+            // Listar archivos en wwwroot/images para diagnóstico
+            var imagesDir = Path.Combine(env.WebRootPath, "images");
+            if (Directory.Exists(imagesDir))
             {
-                logger.LogInformation("     - {FileName}", Path.GetFileName(file));
+                var files = Directory.GetFiles(imagesDir);
+                logger.LogInformation("   Archivos en {ImagesDir}:", imagesDir);
+                foreach (var file in files)
+                {
+                    logger.LogInformation("     - {FileName}", Path.GetFileName(file));
+                }
             }
+            else
+            {
+                logger.LogWarning("   ❌ Directorio 'images' no existe en wwwroot");
+            }
+
+            fullLogoPath = string.Empty; // Sin marca de agua si no existe
         }
         else
         {
-            logger.LogWarning("   ❌ Directorio 'images' no existe en wwwroot");
+            var fileInfo = new FileInfo(fullLogoPath);
+            logger.LogInformation("✅ Logo encontrado: {LogoPath} ({Size} bytes)", fullLogoPath, fileInfo.Length);
         }
-        
-        fullLogoPath = string.Empty; // Sin marca de agua si no existe
-    }
-    else
-    {
-        var fileInfo = new FileInfo(fullLogoPath);
-        logger.LogInformation("✅ Logo encontrado: {LogoPath} ({Size} bytes)", fullLogoPath, fileInfo.Length);
-    }
-    
-    return new ReportGenerator(fullLogoPath, reportLogger as ILogger<ReportGenerator>);
-});
+
+        return new ReportGenerator(fullLogoPath, reportLogger as ILogger<ReportGenerator>);
+    });
 
 // ✨ MEJORADO: Configuración de archivos estáticos (para el logo)
-builder.Services.AddDirectoryBrowser(); // Opcional: para debug
+    builder.Services.AddDirectoryBrowser(); // Opcional: para debug
 
 // ====================================================================
 // AUTENTICACIÓN JWT
 // ====================================================================
 
-var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var key = Encoding.ASCII.GetBytes(jwtSettings["Key"] 
-    ?? throw new InvalidOperationException("JWT Key no configurada en appsettings.json"));
+    var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+    var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]
+                                      ?? throw new InvalidOperationException(
+                                          "JWT Key no configurada en appsettings.json"));
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.RequireHttpsMetadata = false; // ⚠️ Solo en desarrollo
-    options.SaveToken = true;
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtSettings["Issuer"],
-        ValidAudience = jwtSettings["Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(key),
-        ClockSkew = TimeSpan.Zero // Expiración exacta
-    };
-    
-    // ✨ AÑADIDO: Manejo de eventos JWT para debugging
-    options.Events = new JwtBearerEvents
-    {
-        OnAuthenticationFailed = context =>
+    builder.Services.AddAuthentication(options =>
         {
-            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
-            logger.LogError(context.Exception, "Error de autenticación JWT");
-            return Task.CompletedTask;
-        },
-        OnTokenValidated = context =>
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
         {
-            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
-            logger.LogDebug("Token JWT validado correctamente para usuario: {User}", 
-                context.Principal?.Identity?.Name);
-            return Task.CompletedTask;
-        }
-    };
-});
+            options.RequireHttpsMetadata = false; // ⚠️ Solo en desarrollo
+            options.SaveToken = true;
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = jwtSettings["Issuer"],
+                ValidAudience = jwtSettings["Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ClockSkew = TimeSpan.Zero // Expiración exacta
+            };
+
+            // ✨ AÑADIDO: Manejo de eventos JWT para debugging
+            options.Events = new JwtBearerEvents
+            {
+                OnAuthenticationFailed = context =>
+                {
+                    var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(context.Exception, "Error de autenticación JWT");
+                    return Task.CompletedTask;
+                },
+                OnTokenValidated = context =>
+                {
+                    var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                    logger.LogDebug("Token JWT validado correctamente para usuario: {User}",
+                        context.Principal?.Identity?.Name);
+                    return Task.CompletedTask;
+                }
+            };
+        });
 
 // ====================================================================
 // SWAGGER
 // ====================================================================
 
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo 
-    { 
-        Title = "StudyMate AI API", 
-        Version = "v1",
-        Description = "API para gestión de documentos, resúmenes y cuestionarios con IA",
-        Contact = new OpenApiContact
-        {
-            Name = "StudyMate AI Team",
-            Email = "support@studymateai.com"
-        }
-    });
-    
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    builder.Services.AddSwaggerGen(c =>
     {
-        Description = @"JWT Authorization header usando el esquema Bearer. 
+        c.SwaggerDoc("v1", new OpenApiInfo
+        {
+            Title = "StudyMate AI API",
+            Version = "v1",
+            Description = "API para gestión de documentos, resúmenes y cuestionarios con IA",
+            Contact = new OpenApiContact
+            {
+                Name = "StudyMate AI Team",
+                Email = "support@studymateai.com"
+            }
+        });
+
+        c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            Description = @"JWT Authorization header usando el esquema Bearer. 
                         Ingresa 'Bearer' [espacio] y luego tu token.
                         Ejemplo: 'Bearer 12345abcdef'",
-        Name = "Authorization",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
-    });
-    
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
+            Name = "Authorization",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.ApiKey,
+            Scheme = "Bearer"
+        });
+
+        c.AddSecurityRequirement(new OpenApiSecurityRequirement
         {
-            new OpenApiSecurityScheme 
-            { 
-                Reference = new OpenApiReference 
-                { 
-                    Type = ReferenceType.SecurityScheme, 
-                    Id = "Bearer" 
-                }
-            },
-            Array.Empty<string>()
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                Array.Empty<string>()
+            }
+        });
+
+        // ✨ AÑADIDO: Incluir comentarios XML si existen
+        var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+        if (File.Exists(xmlPath))
+        {
+            c.IncludeXmlComments(xmlPath);
         }
     });
-    
-    // ✨ AÑADIDO: Incluir comentarios XML si existen
-    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    if (File.Exists(xmlPath))
-    {
-        c.IncludeXmlComments(xmlPath);
-    }
-});
 
 // ====================================================================
 // BUILD DE LA APLICACIÓN
 // ====================================================================
 
-var app = builder.Build();
+    var app = builder.Build();
 
 // ====================================================================
 // CONFIGURACIÓN DEL PIPELINE HTTP
 // ====================================================================
 
 // ✨ MEJORADO: Manejo de excepciones global
-if (app.Environment.IsDevelopment())
-{
-    app.UseDeveloperExceptionPage();
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
+    if (app.Environment.IsDevelopment())
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "StudyMate AI v1");
-        c.RoutePrefix = string.Empty; // Swagger en la raíz
-        c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None); // Colapsar por defecto
-    });
-}
-else
-{
-    // ✨ AÑADIDO: Manejo de errores en producción
-    app.UseExceptionHandler("/error");
-    app.UseHsts(); // HTTP Strict Transport Security
-}
+        app.UseDeveloperExceptionPage();
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
+        {
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "StudyMate AI v1");
+            c.RoutePrefix = string.Empty; // Swagger en la raíz
+            c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None); // Colapsar por defecto
+        });
+    }
+    else
+    {
+        // ✨ AÑADIDO: Manejo de errores en producción
+        app.UseExceptionHandler("/error");
+        app.UseHsts(); // HTTP Strict Transport Security
+    }
 
 // ✨ AÑADIDO: Servir archivos estáticos (para el logo)
-app.UseStaticFiles();
+    app.UseStaticFiles();
 
-app.UseHttpsRedirection();
+    app.UseHttpsRedirection();
 
-app.UseCors("AllowBlazorClient"); 
+    app.UseCors("AllowBlazorClient");
 
-app.UseAuthentication(); // <-- PRIMERO (¿Quién eres?)
-app.UseAuthorization();  // <-- SEGUNDO (¿Qué puedes hacer?)
+    app.UseAuthentication(); // <-- PRIMERO (¿Quién eres?)
+    app.UseAuthorization(); // <-- SEGUNDO (¿Qué puedes hacer?)
 
-app.MapControllers();
+    app.MapControllers();
 
 // ✨ AÑADIDO: Endpoint de salud (health check)
-app.MapGet("/health", () => Results.Ok(new 
-{ 
-    status = "healthy", 
-    timestamp = DateTime.UtcNow,
-    version = "1.0.0"
-})).AllowAnonymous();
+    app.MapGet("/health", () => Results.Ok(new
+    {
+        status = "healthy",
+        timestamp = DateTime.UtcNow,
+        version = "1.0.0"
+    })).AllowAnonymous();
 
 // ✨ AÑADIDO: Endpoint de error para producción
-app.MapGet("/error", () => Results.Problem("Ocurrió un error en el servidor"))
-    .ExcludeFromDescription();
+    app.MapGet("/error", () => Results.Problem("Ocurrió un error en el servidor"))
+        .ExcludeFromDescription();
 
-app.Run();
+    app.Run();
+});
