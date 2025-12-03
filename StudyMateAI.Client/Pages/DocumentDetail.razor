@@ -1,10 +1,15 @@
 @page "/documentos/{Id:int}"
+@using StudyMateAI.Client.Components
 @using StudyMateAI.Client.DTOs.Document
 @using StudyMateAI.Client.DTOs.Flashcards
+@using StudyMateAI.Client.DTOs.Quiz
 @using StudyMateAI.Client.Services
 @inject DocumentService DocumentService
 @inject StudyService StudyService
 @inject ISnackbar Snackbar
+
+@inject QuizService QuizService
+@inject IDialogService DialogService
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
     @if (_document == null)
@@ -67,16 +72,16 @@
             <MudTabPanel Text="Flashcards" Icon="@Icons.Material.Filled.ViewCarousel">
                 @if (_loadingFlashcards)
                 {
-                     <MudProgressLinear Indeterminate="true" Color="Color.Secondary" />
-                     <MudText Class="mt-2">Generando tarjetas...</MudText>
+                    <MudProgressLinear Indeterminate="true" Color="Color.Secondary" />
+                    <MudText Class="mt-2">Generando tarjetas...</MudText>
                 }
                 else if (_flashcards == null || _flashcards.Count == 0)
                 {
-                     <MudAlert Severity="Severity.Info" Class="mb-4">Este documento no tiene tarjetas aún.</MudAlert>
-                     <MudButton Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.AutoAwesome" 
-                                OnClick="GenerateFlashcards" Size="Size.Large">
-                         Generar Flashcards con IA
-                     </MudButton>
+                    <MudAlert Severity="Severity.Info" Class="mb-4">Este documento no tiene tarjetas aún.</MudAlert>
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.AutoAwesome" 
+                               OnClick="GenerateFlashcards" Size="Size.Large">
+                        Generar Flashcards con IA
+                    </MudButton>
                 }
                 else
                 {
@@ -109,6 +114,31 @@
                     </MudGrid>
                 }
             </MudTabPanel>
+            
+            <!-- CUESTIONARIO -->
+            <MudTabPanel Text="Cuestionario" Icon="@Icons.Material.Filled.Quiz">
+                <div class="d-flex flex-column align-center justify-center text-center pa-10">
+                    <MudIcon Icon="@Icons.Material.Filled.Quiz" Color="Color.Primary" Size="Size.Large" Class="mb-4" />
+                    <MudText Typo="Typo.h5" GutterBottom="true">Prueba tus conocimientos</MudText>
+                    <MudText Class="mb-6">Genera un cuestionario basado en el documento para evaluar tu comprensión.</MudText>
+                    
+                    <MudButton Variant="Variant.Filled" 
+                               Color="Color.Primary" 
+                               Size="Size.Large" 
+                               OnClick="StartQuiz"
+                               Disabled="_startingQuiz">
+                        @if (_startingQuiz)
+                        {
+                            <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2"/>
+                            <span>Generando...</span>
+                        }
+                        else
+                        {
+                            <span>Empezar Cuestionario</span>
+                        }
+                    </MudButton>
+                </div>
+            </MudTabPanel>
 
             <MudTabPanel Text="Mapa Mental" Icon="@Icons.Material.Filled.Hub" Disabled="true">
                 <MudText>Próximamente...</MudText>
@@ -124,6 +154,7 @@
     private DocumentResponseDto? _document;
     private string _summaryText = "";
     private bool _loadingSummary = false;
+    private bool _startingQuiz = false;
     
     // Inicializamos la lista para que no sea null nunca
     private List<FlashcardResponseDto> _flashcards = new(); 
@@ -205,5 +236,39 @@
             "hard" => Color.Error,
             _ => Color.Default
         };
+    }
+
+    private async Task StartQuiz()
+    {
+        _startingQuiz = true;
+        try
+        {
+            // 1. Llamamos al servicio para generar el quiz y obtener su estructura
+            var quizForAttempt = await QuizService.GenerateQuiz(Id);
+
+            // 2. Abrimos el quiz en un diálogo maximizado
+            var parameters = new DialogParameters { ["Quiz"] = quizForAttempt };
+            var options = new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true };
+            var dialog = DialogService.Show<TakeQuiz>("Cuestionario", parameters, options);
+
+            var result = await dialog.Result;
+
+            // 3. Si el usuario completó el quiz, mostramos los resultados
+            if (!result.Canceled)
+            {
+                var quizResult = (QuizAttemptResultDto)result.Data;
+                var resultParams = new DialogParameters { ["Result"] = quizResult };
+                var resultOptions = new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true };
+                DialogService.Show<QuizResult>("Resultado del Cuestionario", resultParams, resultOptions);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error al iniciar el quiz: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _startingQuiz = false;
+        }
     }
 }

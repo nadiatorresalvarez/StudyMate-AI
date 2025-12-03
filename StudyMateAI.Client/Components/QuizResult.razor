@@ -1,0 +1,72 @@
+@using StudyMateAI.Client.DTOs.Quiz
+
+<MudDialog>
+    <TitleContent>
+        <div class="d-flex align-center">
+            <MudIcon Icon="@Icons.Material.Filled.Grading" Class="mr-3" />
+            <MudText Typo="Typo.h6">Resultados: @Result.QuizTitle</MudText>
+        </div>
+    </TitleContent>
+    <DialogContent>
+        <div class="d-flex justify-center align-center pa-4">
+            <MudProgressCircular Color="Color.Success" Value="@((int)Result.ScorePercent)" Size="Size.Large" Class="mr-6">
+                <MudText Typo="Typo.h5">@($"{Result.ScorePercent:F0}%")</MudText>
+            </MudProgressCircular>
+            <div>
+                <MudText Typo="Typo.h6">Puntaje: @Result.CorrectAnswers / @Result.TotalQuestions</MudText>
+                <MudText Typo="Typo.body2" Class="mud-text-secondary">¡Sigue estudiando para mejorar!</MudText>
+            </div>
+        </div>
+        
+        <MudDivider Class="my-4"/>
+
+        <MudExpansionPanels MultiExpansion="true">
+            @foreach (var q in Result.Questions)
+            {
+                <MudExpansionPanel>
+                    <TitleContent>
+                        <div class="d-flex align-center">
+                            <MudIcon Icon="@(q.IsCorrect ? Icons.Material.Filled.CheckCircle : Icons.Material.Filled.Cancel)" 
+                                     Color="@(q.IsCorrect ? Color.Success : Color.Error)" Class="mr-3"/>
+                            <MudText>@q.QuestionText</MudText>
+                        </div>
+                    </TitleContent>
+                    <ChildContent>
+                        <!-- CORRECCIÓN AQUÍ: Eliminamos Clickable="false" -->
+                        <MudList T="string">
+                            @foreach(var option in q.Options)
+                            {
+                                if (option == q.CorrectAnswer)
+                                {
+                                    <MudListItem T="string" Icon="@Icons.Material.Filled.Check" IconColor="Color.Success">
+                                        @option (Correcta)
+                                    </MudListItem>
+                                }
+                                else if (option == q.SelectedOption && !q.IsCorrect)
+                                {
+                                    <MudListItem T="string" Icon="@Icons.Material.Filled.Close" IconColor="Color.Error">
+                                        @option (Tu respuesta)
+                                    </MudListItem>
+                                }
+                                else
+                                {
+                                    <MudListItem T="string">@option</MudListItem>
+                                }
+                            }
+                        </MudList>
+                    </ChildContent>
+                </MudExpansionPanel>
+            }
+        </MudExpansionPanels>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Close" Color="Color.Primary" Variant="Variant.Filled">Cerrar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public QuizAttemptResultDto Result { get; set; } = new();
+
+    void Close() => MudDialog.Close(DialogResult.Ok(true));
+}
