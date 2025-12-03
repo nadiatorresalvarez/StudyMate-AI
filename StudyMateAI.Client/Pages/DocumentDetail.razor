@@ -145,8 +145,43 @@
                 </div>
             </MudTabPanel>
 
-            <MudTabPanel Text="Mapa Mental" Icon="@Icons.Material.Filled.Hub" Disabled="true">
-                <MudText>Próximamente...</MudText>
+            <!-- MAPAS -->
+            <MudTabPanel Text="Mapas" Icon="@Icons.Material.Filled.Hub">
+                @if (_loadingMap)
+                {
+                    <div class="d-flex flex-column align-center">
+                        <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+                        <MudText Class="mt-2">La IA está dibujando las conexiones...</MudText>
+                    </div>
+                }
+                else if (string.IsNullOrWhiteSpace(_nodesJson))
+                {
+                    <!-- Si no hay mapa, mostramos los botones para generar -->
+                    <div class="d-flex flex-column align-center justify-center text-center pa-10">
+                        <MudIcon Icon="@Icons.Material.Filled.Hub" Size="Size.Large" Class="mb-4" />
+                        <MudText Typo="Typo.h5" GutterBottom="true">Visualiza las Conexiones</MudText>
+                        <MudText Class="mb-6">Genera un mapa mental o conceptual para entender las relaciones clave del texto.</MudText>
+                        
+                        <div class="d-flex gap-4">
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large"
+                                       OnClick="GenerateConceptMap">
+                                Generar Mapa Conceptual
+                            </MudButton>
+                            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" Size="Size.Large"
+                                       OnClick="GenerateMindMap" Disabled="true">
+                                Generar Mapa Mental (Pronto)
+                            </MudButton>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <!-- Si ya hay un mapa generado, mostramos el visor -->
+                    <div class="d-flex justify-end mb-2">
+                        <MudButton OnClick="ClearMap" StartIcon="@Icons.Material.Filled.Clear">Limpiar y Regenerar</MudButton>
+                    </div>
+                    <DiagramViewer NodesJson="@_nodesJson" EdgesJson="@_edgesJson" />
+                }
             </MudTabPanel>
 
         </MudTabs>
@@ -160,6 +195,10 @@
     private string _summaryText = "";
     private bool _loadingSummary = false;
     private bool _startingQuiz = false;
+    
+    private bool _loadingMap = false;
+    private string? _nodesJson;
+    private string? _edgesJson;
     
     // Inicializamos la lista para que no sea null nunca
     private List<FlashcardResponseDto> _flashcards = new(); 
@@ -275,5 +314,56 @@
         {
             _startingQuiz = false;
         }
+    }
+    private async Task GenerateConceptMap()
+    {
+        _loadingMap = true;
+        _nodesJson = null;
+        _edgesJson = null;
+        try
+        {
+            // Llama al servicio para obtener los datos del mapa conceptual
+            var result = await StudyService.GenerateConceptMap(Id);
+            _nodesJson = result.NodesJson;
+            _edgesJson = result.EdgesJson;
+            Snackbar.Add("Mapa Conceptual generado", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error generando mapa: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _loadingMap = false;
+        }
+    }
+
+    // Este método lo dejaremos listo para el futuro
+    private async Task GenerateMindMap()
+    {
+        _loadingMap = true;
+        _nodesJson = null;
+        _edgesJson = null;
+        try
+        {
+            var result = await StudyService.GenerateMindMap(Id);
+            // La lógica para procesar el JSON jerárquico del mapa mental irá aquí
+            Snackbar.Add("Mapa Mental generado (lógica pendiente)", Severity.Info);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error generando mapa: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _loadingMap = false;
+        }
+    }
+    
+    // Método para limpiar el mapa y mostrar de nuevo los botones de generar
+    private void ClearMap()
+    {
+        _nodesJson = null;
+        _edgesJson = null;
     }
 }
